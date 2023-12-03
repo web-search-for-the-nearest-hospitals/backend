@@ -45,6 +45,11 @@ class Organization(models.Model):
         max_length=100,
         null=True,
         help_text='E-mail организации')
+    """
+    specialities = models.ManyToManyField(Specialty,
+                                          verbose_name='Специальности',
+                                          related_name='organizations')
+    """
 
     class Meta:
         ordering = ['full_name']
