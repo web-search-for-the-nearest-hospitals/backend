@@ -5,6 +5,7 @@ django-filter==23.4
 djangorestframework==3.14.0
 drf-yasg==1.21.7
 exceptiongroup==1.2.0
+gunicorn==21.2.0
 inflection==0.5.1
 iniconfig==2.0.0
 mimesis==11.1.0
