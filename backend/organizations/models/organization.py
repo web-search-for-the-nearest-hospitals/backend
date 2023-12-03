@@ -27,6 +27,7 @@ class Organization(models.Model):
         null=True,
         help_text='Код региона в соответствии со справочником ФНС России')
     date_added = models.DateTimeField(
+        'Дата создания организации в БД',
         auto_now=True,
         help_text='Дата внесения организации в БД')
 
