@@ -17,19 +17,16 @@ class OrganizationSpecialty(models.Model):
         (6, 'Суббота'),
         (7, 'Воскресение'),
     )
-    DAY_TYPES = (
-        ('weekday', 'выходной'),
-        ('holiday', 'праздник'),
-        ('daily', 'будни')
-    )
 
     organization = models.ForeignKey(
         Organization,
+        verbose_name='Организация',
         on_delete=models.CASCADE,
         related_name='specialties'
     )
     specialty = models.ForeignKey(
         Specialty,
+        verbose_name='Специальность',
         on_delete=models.CASCADE,
         related_name='organizations'
     )
@@ -41,18 +38,23 @@ class OrganizationSpecialty(models.Model):
     working_hours = fields.ArrayField(
         fields.ArrayField(
             models.CharField(
-                max_length=5
+                max_length=11
             ),
             size=2
         ),
         verbose_name='Часы работы'
     )
-    day_type = models.CharField(
-        'Тип дня',
-        max_length=30,
-        choices=DAY_TYPES
-    )
+
+    class Meta:
+        ordering = None
+        verbose_name = 'Расписание специальностей'
+        verbose_name_plural = 'Расписания специальностей'
+        constraints = [
+            models.UniqueConstraint(
+                fields=['organization', 'specialty', 'day_of_the_week'],
+                name='unique_orgspec_organization_specialty_day')
+        ]
 
     def __str__(self):
-        return (f'<Больничка {self.organization.name} + Специальность '
+        return (f'<Организация {self.organization.short_name} + Специальность '
                 f'{self.specialty.name}>')
