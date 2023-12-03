@@ -25,4 +25,3 @@ class OrganizationSpecialtyAdminModel(admin.ModelAdmin):
 
     list_display = ('organization', 'specialty', 'working_hours',
                     'day_of_the_week')
-
