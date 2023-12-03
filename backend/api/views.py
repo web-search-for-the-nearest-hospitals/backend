@@ -4,13 +4,13 @@ from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
-from organizations.models import Organization
-
+from organizations.models import Organization, Specialty
 from .filters import SearchFilterWithCustomDescription
-from .mixins import RetrieveListViewSet
+from .mixins import RetrieveListViewSet, NoPaginationMixin
 from .paginators import CustomNumberPagination
 from .serializers import (OrganizationListSerializer,
-                          OrganizationRetrieveSerializer)
+                          OrganizationRetrieveSerializer,
+                          SpecialtySerializer)
 from .utils import count_distance
 
 
@@ -35,7 +35,6 @@ class OrganizationViewSet(RetrieveListViewSet):
 
         long = request.query_params.get('long')
         lat = request.query_params.get('lat')
-        print(long, lat)
 
         if not (long and lat):
             return Response(
@@ -62,3 +61,11 @@ class OrganizationViewSet(RetrieveListViewSet):
         if page:
             return self.get_paginated_response(serializer.data)
         return Response(serializer.data)
+
+
+class SpecialtyViewSet(NoPaginationMixin,
+                       RetrieveListViewSet):
+    """Вью-сет для тегов."""
+
+    queryset = Specialty.objects.all()
+    serializer_class = SpecialtySerializer

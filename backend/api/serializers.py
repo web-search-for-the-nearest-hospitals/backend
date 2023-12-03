@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from organizations.models import Organization
+from organizations.models import Organization, Specialty
 
 
 class OrganizationListSerializer(serializers.ModelSerializer):
@@ -9,7 +9,6 @@ class OrganizationListSerializer(serializers.ModelSerializer):
     class Meta:
         model = Organization
         exclude = ['id', 'date_added', 'region_code']
-        read_only_fields = ('full_name',)
 
 
 class OrganizationRetrieveSerializer(serializers.ModelSerializer):
@@ -18,7 +17,14 @@ class OrganizationRetrieveSerializer(serializers.ModelSerializer):
     class Meta:
         model = Organization
         exclude = ['id', 'date_added']
-        read_only_fields = ('full_name', 'factual_address')
+
+
+class SpecialtySerializer(serializers.ModelSerializer):
+    """Сериализатор для специальности врача."""
+
+    class Meta:
+        model = Specialty
+        fields = ('code', 'name', 'skill')
 
 
 class ErrorSerializer(serializers.Serializer):

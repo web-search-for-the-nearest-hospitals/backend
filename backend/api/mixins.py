@@ -6,3 +6,9 @@ class RetrieveListViewSet(mixins.RetrieveModelMixin,
                           viewsets.GenericViewSet):
     """Миксин для RETRIEVE & LIST вью-сета."""
     pass
+
+
+class NoPaginationMixin:
+    """Миксин без пагинации."""
+
+    pagination_class = None
