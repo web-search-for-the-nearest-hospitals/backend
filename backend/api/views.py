@@ -65,7 +65,7 @@ class OrganizationViewSet(RetrieveListViewSet):
 
 class SpecialtyViewSet(NoPaginationMixin,
                        RetrieveListViewSet):
-    """Вью-сет для тегов."""
+    """Вью-сет для специальности."""
 
     queryset = Specialty.objects.all()
     serializer_class = SpecialtySerializer
