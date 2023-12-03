@@ -15,7 +15,7 @@ from .utils import count_distance
 
 
 class OrganizationViewSet(RetrieveListViewSet):
-    queryset = Organization.objects.all()
+    queryset = Organization.objects.prefetch_related('specialties').all()
 
     serializer_class = OrganizationListSerializer
     filter_backends = [DjangoFilterBackend, SearchFilterWithCustomDescription]

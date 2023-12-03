@@ -36,11 +36,8 @@ class OrganizationSpecialty(models.Model):
         choices=DAYS_OF_WEEK
     )
     working_hours = fields.ArrayField(
-        fields.ArrayField(
-            models.CharField(
-                max_length=11
-            ),
-            size=2
+        models.CharField(
+            max_length=11
         ),
         verbose_name='Часы работы'
     )
