@@ -46,7 +46,6 @@ class Organization(models.Model):
         null=True,
         help_text='E-mail организации')
 
-
     class Meta:
         ordering = ['full_name']
         verbose_name = 'Организация'
