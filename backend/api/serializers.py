@@ -58,3 +58,9 @@ class OrganizationSerializer(serializers.ModelSerializer):
                     day_of_the_week=day_of_the_week
                 )
         return org
+
+    def update(self, instance, validated_data):
+        #specialties = validated_data.pop('specialties')
+        instance = super().update(instance, validated_data)
+
+        return instance

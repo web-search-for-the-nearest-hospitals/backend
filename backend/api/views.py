@@ -1,18 +1,18 @@
 import http
 
 from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework import viewsets
 from rest_framework.response import Response
 
 from organizations.models import Organization, Specialty
 from .filters import SearchFilterWithCustomDescription, SpecialtyFilter
-from .mixins import (RetrieveListViewSet, NoPaginationMixin,
-                     RetrieveListCreateDestroyViewSet)
+from .mixins import (RetrieveListViewSet, NoPaginationMixin)
 from .paginators import CustomNumberPagination
 from .serializers import OrganizationSerializer, SpecialtySerializer
 from .utils import count_distance
 
 
-class OrganizationViewSet(RetrieveListCreateDestroyViewSet):
+class OrganizationViewSet(viewsets.ModelViewSet):
     LAT, LONG = 54.513675, 36.261342
 
     def get_queryset(self):
@@ -45,6 +45,7 @@ class OrganizationViewSet(RetrieveListCreateDestroyViewSet):
     filterset_class = SpecialtyFilter
     search_fields = ('=inn',)
     pagination_class = CustomNumberPagination
+    http_method_names = ['get', 'post', 'head', 'delete', 'patch']
 
 
 class SpecialtyViewSet(NoPaginationMixin,
