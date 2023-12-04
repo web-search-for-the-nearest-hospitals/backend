@@ -5,8 +5,16 @@ from .organization import Organization
 from .specialty import Specialty
 
 
+class MyModelManager(models.Manager):
+    def get_queryset(self):
+        return super().get_queryset().prefetch_related('specialty')
+
+
 class OrganizationSpecialty(models.Model):
     """Расписание специальностей в больничке."""
+
+    _base_manager = MyModelManager
+    objects = MyModelManager()
 
     DAYS_OF_WEEK = (
         (1, 'Понедельник'),

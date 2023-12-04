@@ -15,8 +15,8 @@ class SpecialtySerializer(serializers.ModelSerializer):
 class ScheduleOrgListSerializer(serializers.ModelSerializer):
     """Сериализатор для отображения специальностей списка организаций."""
 
-    name = serializers.ReadOnlyField(source='specialty.name')
-    code = serializers.ReadOnlyField(source='specialty.code')
+    name = serializers.CharField(source='specialty.name')
+    code = serializers.CharField(source='specialty.code')
 
     class Meta:
         model = OrganizationSpecialty
