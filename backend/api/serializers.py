@@ -1,3 +1,5 @@
+from django.db import transaction
+from django.shortcuts import get_object_or_404
 from rest_framework import serializers
 
 from organizations.models import (Organization, OrganizationSpecialty,
@@ -5,63 +7,54 @@ from organizations.models import (Organization, OrganizationSpecialty,
 
 
 class SpecialtySerializer(serializers.ModelSerializer):
-    """Сериализатор для специальности врача."""
+    """Сериализатор специальности врача."""
 
     class Meta:
         model = Specialty
         fields = ('code', 'name', 'skill')
 
 
-class ScheduleOrgListSerializer(serializers.ModelSerializer):
-    """Сериализатор для отображения специальностей списка организаций."""
+class OrgSpecialtySerializer(serializers.ModelSerializer):
+    """Сериализатор специальностей организации."""
 
-    name = serializers.CharField(source='specialty.name')
     code = serializers.CharField(source='specialty.code')
+    name = serializers.CharField(source='specialty.name')
+    skill = serializers.CharField(source='specialty.skill')
 
     class Meta:
         model = OrganizationSpecialty
-        fields = ('name', 'code')
+        fields = ('code', 'name', 'skill', 'working_hours', 'day_of_the_week')
 
 
-class ScheduleOrgRetrieveSerializer(serializers.ModelSerializer):
-    """Сериализатор для отображения специальностей организации."""
+class OrganizationSerializer(serializers.ModelSerializer):
+    """Сериализатор организации."""
 
-    name = serializers.ReadOnlyField(source='specialty.name')
-    code = serializers.ReadOnlyField(source='specialty.code')
-    skill = serializers.ReadOnlyField(source='specialty.skill')
-
-    class Meta:
-        model = OrganizationSpecialty
-        fields = ('code', 'name', 'skill', 'working_hours',
-                  'day_of_the_week')
-
-
-class OrganizationListSerializer(serializers.ModelSerializer):
-    """Сериализатор для списка организации."""
-
-    specialties = ScheduleOrgListSerializer(many=True)
+    specialties = OrgSpecialtySerializer(many=True, required=False)
 
     class Meta:
         model = Organization
-        fields = ('id', 'full_name', 'short_name', 'factual_address',
-                  'longitude', 'latitude', 'site', 'specialties')
-
-
-class OrganizationRetrieveSerializer(serializers.ModelSerializer):
-    """Сериализатор для профиля организации."""
-
-    specialties = ScheduleOrgRetrieveSerializer(many=True)
-
-    class Meta:
-        model = Organization
-        fields = ('full_name', 'short_name',
-                  'inn', 'date_added', 'factual_address',
-                  'region_code', 'longitude', 'latitude',
+        fields = ('full_name', 'short_name', 'inn', 'factual_address',
+                  'region_code', 'date_added', 'longitude', 'latitude',
                   'site', 'email', 'specialties')
 
-
-class ErrorSerializer(serializers.Serializer):
-    """Сериализатор для вывода ошибки."""
-
-    detail = serializers.CharField(help_text='Описание ошибки',
-                                   required=False)
+    def create(self, validated_data):
+        specialties = validated_data.pop('specialties')
+        with transaction.atomic():
+            org = Organization.objects.create(**validated_data)
+            for specialty in specialties:
+                spec_data = specialty['specialty']
+                code = spec_data['code']
+                name = spec_data['name']
+                skill = spec_data['skill']
+                working_hours = specialty['working_hours']
+                day_of_the_week = specialty['day_of_the_week']
+                current_specialty = get_object_or_404(
+                    Specialty, code=code,
+                    name=name, skill=skill)
+                OrganizationSpecialty.objects.create(
+                    organization=org,
+                    specialty=current_specialty,
+                    working_hours=working_hours,
+                    day_of_the_week=day_of_the_week
+                )
+        return org
