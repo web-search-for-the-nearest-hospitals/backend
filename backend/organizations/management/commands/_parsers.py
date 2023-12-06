@@ -1,9 +1,8 @@
 import random
-import string
 from abc import ABC, abstractmethod
 from typing import Dict, List, Tuple
 
-from mimesis import Generic, Internet
+from mimesis import Generic, Internet, Person, Text
 from mimesis.builtins import RussiaSpecProvider
 from mimesis.locales import Locale
 
@@ -72,28 +71,23 @@ class GenerateOrgParser(OrgParser):
         internet = Internet()
         g = Generic(locale=Locale.RU)
         g.add_provider(RussiaSpecProvider)
-        region_code_choices: str = string.digits
         short_names: Tuple[str] = tuple(self.forms.keys())
-
         for _ in range(self.num):
-            address = (f'{g.address.address()}, '
-                       f'{g.address.city()}, '
-                       f'{g.address.region()}, '
-                       f'{g.address.zip_code()}').upper()
             short_name_abbr: str = random.choice(short_names)
             full_name_abbr: str = self.forms[short_name_abbr]
             word: str = f'"{g.text.word().upper()}"'
-            region_code: str = (random.choice(region_code_choices)
-                                + random.choice(region_code_choices))
             org = Organization(
                 full_name=f'{full_name_abbr} {word}',
                 short_name=f'{word}',
                 inn=g.russia_provider.inn(),
-                factual_address=address,
-                region_code=region_code,
-                longitude=g.address.longitude(),
-                latitude=g.address.latitude(),
-                site=internet.url()
+                factual_address=g.address.address(),
+                longitude=round(random.uniform(36, 36.4), 5),
+                latitude=round(random.uniform(54.4, 54.6), 5),
+                site=internet.url(),
+                email=Person(locale=Locale.RU).email(),
+                is_gov=random.choice([True, False]),
+                is_full_time=random.choice([True, False]),
+                about=Text(locale=Locale.RU).text(random.randint(2, 10))
             )
             orgs.append(org)
 
