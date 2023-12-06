@@ -37,30 +37,44 @@ class OrganizationSerializer(serializers.ModelSerializer):
                   'region_code', 'date_added', 'longitude', 'latitude',
                   'site', 'email', 'specialties')
 
-    def create(self, validated_data):
-        specialties = validated_data.pop('specialties')
-        with transaction.atomic():
-            org = Organization.objects.create(**validated_data)
-            for specialty in specialties:
-                spec_data = specialty['specialty']
-                code = spec_data['code']
-                name = spec_data['name']
-                skill = spec_data['skill']
-                working_hours = specialty['working_hours']
-                day_of_the_week = specialty['day_of_the_week']
-                current_specialty = get_object_or_404(
-                    Specialty, code=code,
-                    name=name, skill=skill)
-                OrganizationSpecialty.objects.create(
+    @staticmethod
+    def create_org_specialty(specialties: dict,
+                             org: Organization) -> None:
+        new_org_specialties = []
+
+        for specialty in specialties:
+            spec_data = specialty['specialty']
+            code = spec_data['code']
+            name = spec_data['name']
+            skill = spec_data['skill']
+            working_hours = specialty['working_hours']
+            day_of_the_week = specialty['day_of_the_week']
+            current_specialty = get_object_or_404(
+                Specialty, code=code,
+                name=name, skill=skill)
+            new_org_specialties.append(
+                OrganizationSpecialty(
                     organization=org,
                     specialty=current_specialty,
                     working_hours=working_hours,
                     day_of_the_week=day_of_the_week
                 )
+            )
+        OrganizationSpecialty.objects.bulk_create(new_org_specialties)
+
+    def create(self, validated_data):
+        specialties = validated_data.pop('specialties')
+        with transaction.atomic():
+            org = Organization.objects.create(**validated_data)
+            self.create_org_specialty(specialties, org)
         return org
 
     def update(self, instance, validated_data):
-        #specialties = validated_data.pop('specialties')
-        instance = super().update(instance, validated_data)
-
+        specialties = validated_data.pop('specialties')
+        with transaction.atomic():
+            instance = super().update(instance, validated_data)
+            OrganizationSpecialty.objects.filter(
+                organization=instance
+            ).delete()
+            self.create_org_specialty(specialties, instance)
         return instance
