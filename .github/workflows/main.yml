@@ -56,6 +56,7 @@ jobs:
           username: ${{ secrets.USER }}
           password: ${{ secrets.PASSWORD }}
           script: |
+            echo $PWD
             sudo docker pull ${{ secrets.DOCKER_USERNAME }}/backend
             sudo docker compose stop
             sudo docker compose rm backend
