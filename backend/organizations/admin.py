@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Organization, OrganizationSpecialty, Specialty
+from .models import (Organization, OrganizationSpecialty, Specialty, Town)
 
 
 @admin.register(Organization)
@@ -25,3 +25,10 @@ class OrganizationSpecialtyAdminModel(admin.ModelAdmin):
 
     list_display = ('organization', 'specialty', 'working_hours',
                     'day_of_the_week')
+
+
+@admin.register(Town)
+class TownAdminModel(admin.ModelAdmin):
+    """Модель админки для города."""
+
+    list_display = ('name', 'longitude', 'latitude')
