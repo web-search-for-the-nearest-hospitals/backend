@@ -1,3 +1,4 @@
 from .organization import Organization
-from .specialty import Specialty
 from .orgspec import OrganizationSpecialty
+from .specialty import Specialty
+from .town import Town

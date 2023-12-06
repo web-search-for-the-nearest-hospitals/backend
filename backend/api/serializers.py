@@ -34,8 +34,9 @@ class OrganizationSerializer(serializers.ModelSerializer):
     class Meta:
         model = Organization
         fields = ('full_name', 'short_name', 'inn', 'factual_address',
-                  'region_code', 'date_added', 'longitude', 'latitude',
-                  'site', 'email', 'specialties')
+                  'date_added', 'longitude', 'latitude',
+                  'site', 'email', 'is_gov', 'is_full_time',
+                  'about', 'specialties')
 
     @staticmethod
     def create_org_specialty(specialties: dict,
