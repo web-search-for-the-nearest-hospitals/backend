@@ -7,8 +7,16 @@ from organizations.models import (Organization, OrganizationSpecialty,
                                   Specialty, District, Town)
 
 
-class DistrictSerializer(serializers.ModelSerializer):
-    """Сериализатор района города."""
+class SpecialtySerializer(serializers.ModelSerializer):
+    """Сериализатор специальности врача."""
+
+    class Meta:
+        model = Specialty
+        fields = ('code', 'name', 'skill')
+
+
+class OrgDistrictSerializer(serializers.ModelSerializer):
+    """Сериализатор района города организации."""
 
     id = serializers.IntegerField()
 
@@ -20,19 +28,21 @@ class DistrictSerializer(serializers.ModelSerializer):
 class TownSerializer(serializers.ModelSerializer):
     """Сериализатор города."""
 
+    districts = OrgDistrictSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = Town
+        fields = ('id', 'name', 'districts')
+
+
+class OrgTownSerializer(serializers.ModelSerializer):
+    """Сериализатор города организации."""
+
     id = serializers.IntegerField()
 
     class Meta:
         model = Town
         fields = ('id', 'name')
-
-
-class SpecialtySerializer(serializers.ModelSerializer):
-    """Сериализатор специальности врача."""
-
-    class Meta:
-        model = Specialty
-        fields = ('code', 'name', 'skill')
 
 
 class OrgSpecialtySerializer(serializers.ModelSerializer):
@@ -55,8 +65,8 @@ class OrganizationSerializer(serializers.ModelSerializer):
         label='relative_addr',
         help_text='относительный адрес организации',
         read_only=True)
-    town = TownSerializer()
-    district = DistrictSerializer(required=False)
+    town = OrgTownSerializer()
+    district = OrgDistrictSerializer(required=False)
 
     class Meta:
         model = Organization
