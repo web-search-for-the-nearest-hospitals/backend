@@ -5,7 +5,7 @@ from rest_framework import viewsets
 from rest_framework.response import Response
 
 from organizations.models import Organization, Specialty
-from .filters import SearchFilterWithCustomDescription, SpecialtyFilter
+from .filters import SearchFilterWithCustomDescription, OrgFilter
 from .mixins import (RetrieveListViewSet, NoPaginationMixin)
 from .paginators import CustomNumberPagination
 from .serializers import OrganizationSerializer, SpecialtySerializer
@@ -34,7 +34,7 @@ class OrganizationViewSet(viewsets.ModelViewSet):
         return (
             Organization
             .objects
-            .prefetch_related('specialties')
+            .prefetch_related('specialties', 'district', 'town')
             .annotate(distance=count_distance(long, lat))
             .order_by('distance')
             .all()
@@ -42,7 +42,7 @@ class OrganizationViewSet(viewsets.ModelViewSet):
 
     serializer_class = OrganizationSerializer
     filter_backends = [DjangoFilterBackend, SearchFilterWithCustomDescription]
-    filterset_class = SpecialtyFilter
+    filterset_class = OrgFilter
     search_fields = ('=inn',)
     pagination_class = CustomNumberPagination
     http_method_names = ['get', 'post', 'head', 'delete', 'patch']

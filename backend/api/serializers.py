@@ -4,7 +4,27 @@ from django.urls import reverse
 from rest_framework import serializers
 
 from organizations.models import (Organization, OrganizationSpecialty,
-                                  Specialty)
+                                  Specialty, District, Town)
+
+
+class DistrictSerializer(serializers.ModelSerializer):
+    """Сериализатор района города."""
+
+    id = serializers.IntegerField()
+
+    class Meta:
+        model = District
+        fields = ('id', 'name')
+
+
+class TownSerializer(serializers.ModelSerializer):
+    """Сериализатор города."""
+
+    id = serializers.IntegerField()
+
+    class Meta:
+        model = Town
+        fields = ('id', 'name')
 
 
 class SpecialtySerializer(serializers.ModelSerializer):
@@ -35,6 +55,8 @@ class OrganizationSerializer(serializers.ModelSerializer):
         label='relative_addr',
         help_text='относительный адрес организации',
         read_only=True)
+    town = TownSerializer()
+    district = DistrictSerializer(required=False)
 
     class Meta:
         model = Organization
@@ -43,7 +65,7 @@ class OrganizationSerializer(serializers.ModelSerializer):
                   'factual_address',
                   'date_added', 'longitude', 'latitude',
                   'site', 'email', 'is_gov', 'is_full_time',
-                  'about', 'specialties')
+                  'about', 'town', 'district', 'specialties')
 
     def get_relative_addr(self, obj):
         return reverse('api:organizations-detail',
@@ -76,6 +98,16 @@ class OrganizationSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         specialties = validated_data.pop('specialties')
+        district = validated_data.pop('district', None)
+        town = validated_data.pop('town', None)
+        if district:
+            district = get_object_or_404(District, id=district['id'],
+                                         name=district['name'])
+            validated_data['district'] = district
+        if town:
+            town = get_object_or_404(Town, id=town['id'],
+                                     name=town['name'])
+            validated_data['town'] = town
         with transaction.atomic():
             org = Organization.objects.create(**validated_data)
             self.create_org_specialty(specialties, org)
@@ -83,6 +115,16 @@ class OrganizationSerializer(serializers.ModelSerializer):
 
     def update(self, instance, validated_data):
         specialties = validated_data.pop('specialties')
+        district = validated_data.pop('district', None)
+        town = validated_data.pop('town', None)
+        if district:
+            district = get_object_or_404(District, id=district['id'],
+                                         name=district['name'])
+            validated_data['district'] = district
+        if town:
+            town = get_object_or_404(Town, id=town['id'],
+                                     name=town['name'])
+            validated_data['town'] = town
         with transaction.atomic():
             instance = super().update(instance, validated_data)
             OrganizationSpecialty.objects.filter(
