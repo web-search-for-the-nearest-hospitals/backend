@@ -70,4 +70,5 @@ jobs:
             echo DB_PORT=${{ secrets.DB_PORT }} >> .env
             echo SECRET_KEY=${{ secrets.SECRET_KEY }} >> .env
             echo BACKEND_HOSTS=${{ secrets.BACKEND_HOSTS }} >> .env
+            echo CSRF_TRUSTED_ORIGINS=${{ secrets.CSRF_TRUSTED_ORIGINS }} >> .env
             sudo docker compose -p infra up -d --build 
