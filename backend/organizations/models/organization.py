@@ -2,6 +2,7 @@ import uuid
 
 from django.db import models
 
+from .district import District
 from .town import Town
 
 
@@ -12,9 +13,10 @@ class Organization(models.Model):
         primary_key=True,
         help_text='Идентификатор организации в БД')
 
-    uuid = models.UUIDField(default=uuid.uuid4,
-                            editable=False,
-                            unique=True)
+    uuid = models.UUIDField(
+        default=uuid.uuid4,
+        editable=False,
+        unique=True)
 
     full_name = models.TextField(
         'Полное наименование',
@@ -89,12 +91,22 @@ class Organization(models.Model):
         blank=True,
         help_text='Дополнительная информация об организации'
     )
-
-    town = models.OneToOneField(
+    town = models.ForeignKey(
         Town,
         on_delete=models.SET_NULL,
         verbose_name='Город организации',
-        null=True
+        null=True,
+        related_name='organizations',
+        help_text='Город организации'
+    )
+
+    district = models.ForeignKey(
+        District,
+        on_delete=models.SET_NULL,
+        verbose_name='Район организации',
+        null=True,
+        related_name='organizations',
+        help_text='Район организации'
     )
 
     class Meta:
