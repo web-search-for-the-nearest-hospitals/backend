@@ -1,3 +1,5 @@
+import uuid
+
 from django.db import models
 
 from .town import Town
@@ -9,6 +11,10 @@ class Organization(models.Model):
     id = models.BigAutoField(
         primary_key=True,
         help_text='Идентификатор организации в БД')
+
+    uuid = models.UUIDField(default=uuid.uuid4,
+                            editable=False,
+                            unique=True)
 
     full_name = models.TextField(
         'Полное наименование',
