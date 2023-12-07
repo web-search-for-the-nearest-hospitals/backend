@@ -8,7 +8,7 @@ class OrganizationAdminModel(admin.ModelAdmin):
     """Модель админки для организаций."""
 
     list_display = ('full_name', 'short_name', 'inn', 'factual_address',
-                    'date_added', 'longitude', 'latitude')
+                    'date_added', 'longitude', 'latitude', 'uuid')
     search_fields = ('inn__exact',)
 
 

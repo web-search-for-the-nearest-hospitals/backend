@@ -1,5 +1,6 @@
 from django.db import transaction
 from django.shortcuts import get_object_or_404
+from django.urls import reverse
 from rest_framework import serializers
 
 from organizations.models import (Organization, OrganizationSpecialty,
@@ -30,13 +31,23 @@ class OrganizationSerializer(serializers.ModelSerializer):
     """Сериализатор организации."""
 
     specialties = OrgSpecialtySerializer(many=True, required=False)
+    relative_addr = serializers.SerializerMethodField(
+        label='relative_addr',
+        help_text='относительный адрес организации',
+        read_only=True)
 
     class Meta:
         model = Organization
-        fields = ('full_name', 'short_name', 'inn', 'factual_address',
+        lookup_field = 'uuid'
+        fields = ('relative_addr', 'full_name', 'short_name', 'inn',
+                  'factual_address',
                   'date_added', 'longitude', 'latitude',
                   'site', 'email', 'is_gov', 'is_full_time',
                   'about', 'specialties')
+
+    def get_relative_addr(self, obj):
+        return reverse('api:organizations-detail',
+                       kwargs={'uuid': obj.uuid})
 
     @staticmethod
     def create_org_specialty(specialties: dict,

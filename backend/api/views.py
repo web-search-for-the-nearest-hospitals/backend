@@ -46,6 +46,7 @@ class OrganizationViewSet(viewsets.ModelViewSet):
     search_fields = ('=inn',)
     pagination_class = CustomNumberPagination
     http_method_names = ['get', 'post', 'head', 'delete', 'patch']
+    lookup_field = 'uuid'
 
 
 class SpecialtyViewSet(NoPaginationMixin,
