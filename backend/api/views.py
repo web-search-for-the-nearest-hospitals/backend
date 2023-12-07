@@ -4,11 +4,12 @@ from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import viewsets
 from rest_framework.response import Response
 
-from organizations.models import Organization, Specialty
+from organizations.models import Organization, Specialty, Town
 from .filters import SearchFilterWithCustomDescription, OrgFilter
 from .mixins import (RetrieveListViewSet, NoPaginationMixin)
 from .paginators import CustomNumberPagination
-from .serializers import OrganizationSerializer, SpecialtySerializer
+from .serializers import (OrganizationSerializer, SpecialtySerializer,
+                          TownSerializer)
 from .utils import count_distance
 
 
@@ -55,3 +56,11 @@ class SpecialtyViewSet(NoPaginationMixin,
 
     queryset = Specialty.objects.all()
     serializer_class = SpecialtySerializer
+
+
+class TownViewSet(NoPaginationMixin,
+                  RetrieveListViewSet):
+    """Вью-сет для города."""
+
+    queryset = Town.objects.all()
+    serializer_class = TownSerializer
