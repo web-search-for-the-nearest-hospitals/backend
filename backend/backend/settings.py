@@ -124,3 +124,6 @@ LOGGING = {
         }
     }
 }
+
+USE_X_FORWARDED_HOST = True
+
