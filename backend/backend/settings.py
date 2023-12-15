@@ -1,10 +1,11 @@
+from datetime import timedelta
 import os
 from pathlib import Path
 
 from dotenv import load_dotenv
 
 BASE_DIR = Path(__file__).resolve().parent.parent
-load_dotenv(os.path.join(BASE_DIR, '.env'))
+load_dotenv(os.path.join(BASE_DIR.parent, '.env'))
 
 SECRET_KEY = os.getenv('SECRET_KEY')
 
@@ -26,6 +27,7 @@ INSTALLED_APPS = [
     'django_filters',
     'organizations',
     'api',
+    'user',
 
 ]
 
@@ -98,7 +100,24 @@ MEDIA_ROOT = BASE_DIR / MEDIA_URL
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(days=1),
+    'AUTH_HEADER_TYPES': ('Bearer',),
+}
+
+AUTH_USER_MODEL = 'user.User'
+
+EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'
+
+DEFAULT_FROM_EMAIL = 'admin@hospt.ru'
+
 REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ],
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.AllowAny',
+    ],
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
     'PAGE_SIZE': 20
 }
