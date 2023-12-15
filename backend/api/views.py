@@ -1,6 +1,9 @@
 import http
 
+from django.utils.decorators import method_decorator
 from django_filters.rest_framework import DjangoFilterBackend
+from drf_yasg import openapi
+from drf_yasg.utils import swagger_auto_schema
 from rest_framework import viewsets
 from rest_framework.response import Response
 
@@ -13,6 +16,54 @@ from .serializers import (OrganizationSerializer, SpecialtySerializer,
 from .utils import count_distance
 
 
+@method_decorator(
+    name="list",
+    decorator=swagger_auto_schema(
+        tags=['Организации'],
+        operation_summary="Список организаций",
+        operation_description=("Страница доступна всем пользователям. "
+                               "Доступен поиск по ИНН."),
+        pagination_class=CustomNumberPagination)
+)
+@method_decorator(
+    name="retrieve",
+    decorator=swagger_auto_schema(
+        tags=['Организации'],
+        operation_summary="Получение организации",
+        operation_description="Страница доступна всем пользователям.",
+        responses={
+            '404': openapi.Response('Страница не найдена.',
+                                    examples={
+                                        "application/json": {
+                                            "detail": "Страница не найдена."}
+                                    })
+        }
+    ),
+)
+@method_decorator(
+    name="create",
+    decorator=swagger_auto_schema(
+        tags=['Организации'],
+        operation_summary="Добавление организации",
+        operation_description="Страница доступна всем пользователям.",
+    ),
+)
+@method_decorator(
+    name="destroy",
+    decorator=swagger_auto_schema(
+        tags=['Организации'],
+        operation_summary="Удаление организации",
+        operation_description="Страница доступна всем пользователям.",
+    ),
+)
+@method_decorator(
+    name="partial_update",
+    decorator=swagger_auto_schema(
+        tags=['Организации'],
+        operation_summary="Обновление организации",
+        operation_description="Страница доступна всем пользователям.",
+    ),
+)
 class OrganizationViewSet(viewsets.ModelViewSet):
     LAT, LONG = 54.513675, 36.261342
 
@@ -50,6 +101,14 @@ class OrganizationViewSet(viewsets.ModelViewSet):
     lookup_field = 'uuid'
 
 
+@method_decorator(
+    name="list",
+    decorator=swagger_auto_schema(
+        tags=['Специальности врачей'],
+        operation_summary="Список специальностей",
+        operation_description=("Страница доступна всем пользователям."),
+    )
+)
 class SpecialtyViewSet(NoPaginationMixin,
                        RetrieveListViewSet):
     """Вью-сет для специальности."""
