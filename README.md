@@ -18,3 +18,9 @@
   `fill_cities_district <path_to_csv>`.
 * Начаты проектирование и реализация бизнес-логики Пользователя (User).
 
+Для локального развертывания используется команда из директории `infra` от root
+```shell
+docker-compose -f docker-compose-local.yml up --build -d
+```
+Не забыть про миграции и статику.  
+Сервис будет доступен на http://localhost:28962.
