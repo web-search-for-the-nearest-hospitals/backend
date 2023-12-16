@@ -4,10 +4,11 @@ from .town import Town
 
 
 class District(models.Model):
-    "Описание модели района."
+    """Описание модели района."""
 
     name = models.CharField(
         'Наименование района',
+        help_text='Наименование района',
         max_length=40)
 
     town = models.ForeignKey(

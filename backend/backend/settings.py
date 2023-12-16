@@ -8,7 +8,8 @@ load_dotenv(os.path.join(BASE_DIR, '.env'))
 
 SECRET_KEY = os.getenv('SECRET_KEY')
 
-CSRF_TRUSTED_ORIGINS = os.getenv('CSRF_TRUSTED_ORIGINS', 'http://localhost').split()
+CSRF_TRUSTED_ORIGINS = os.getenv('CSRF_TRUSTED_ORIGINS',
+                                 'http://localhost').split()
 
 DEBUG = False
 
@@ -26,7 +27,7 @@ INSTALLED_APPS = [
     'django_filters',
     'organizations',
     'api',
-
+    'drf_yasg'
 ]
 
 MIDDLEWARE = [
