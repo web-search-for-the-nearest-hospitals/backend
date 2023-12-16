@@ -21,3 +21,29 @@ class CustomNumberPagination(pagination.PageNumberPagination):
             'previous': self.get_previous_link(),
             'results': data,
         })
+
+    def get_paginated_response_schema(self, schema):
+        return {
+            'type': 'object',
+            'required': '',
+            'properties': {
+                'count': {
+                    'type': 'integer',
+                    'example': 322,
+                    'description': 'Общее количество объектов',
+                },
+                'next': {
+                    'type': 'string',
+                    'nullable': True,
+                    'format': 'uri',
+                    'description': 'Ссылка на следующую страницу'
+                },
+                'previous': {
+                    'type': 'string',
+                    'nullable': True,
+                    'format': 'uri',
+                    'description': 'Ссылка на предыдущую страницу'
+                },
+                'results': schema,
+            },
+        }

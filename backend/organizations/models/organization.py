@@ -16,7 +16,8 @@ class Organization(models.Model):
     uuid = models.UUIDField(
         default=uuid.uuid4,
         editable=False,
-        unique=True)
+        unique=True,
+        help_text='Уникальный идентификатор организации')
 
     full_name = models.TextField(
         'Полное наименование',

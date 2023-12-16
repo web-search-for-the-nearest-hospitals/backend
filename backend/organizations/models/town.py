@@ -2,11 +2,13 @@ from django.db import models
 
 
 class Town(models.Model):
-    "Описание модели города."
+    """Описание модели города."""
 
     name = models.CharField(
         'Наименование города',
+        help_text='Наименование города',
         max_length=25)
+
     longitude = models.FloatField(
         verbose_name='Долгота',
         help_text='Долгота расположения центра '
