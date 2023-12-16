@@ -1,6 +1,13 @@
 name: web_search_for_the_nearest_hospitals Workflow
 
-on: [push]
+on:
+  push:
+  pull_request_target:
+    branches:
+      - main
+      - develop
+    types:
+      - closed
 
 jobs:
   tests:
@@ -27,6 +34,7 @@ jobs:
 
   build_and_push_to_docker_hub:
       name: Push Docker image to Docker Hub
+      if: github.event.pull_request.merged == true
       runs-on: ubuntu-latest
       needs: tests
       steps:
@@ -46,6 +54,7 @@ jobs:
             push: true
             tags: hospitals/backend:latest
   deploy:
+      if: github.event.pull_request.merged == true
       runs-on: ubuntu-latest
       needs: build_and_push_to_docker_hub
       steps:
