@@ -15,9 +15,8 @@ DEBUG = False
 
 ALLOWED_HOSTS = os.getenv('BACKEND_HOSTS', '*').split()
 
-USE_X_FORWARDED_HOST = (
-        os.getenv('USE_X_FORWARDED_HOST', 'False').lower() == 'true'
-)
+USE_X_FORWARDED_HOST = (os.getenv('USE_X_FORWARDED_HOST', 'False').lower()
+                        == 'true')
 
 INSTALLED_APPS = [
     'django.contrib.admin',
