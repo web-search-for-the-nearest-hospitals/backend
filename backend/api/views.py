@@ -84,7 +84,7 @@ class OrganizationViewSet(viewsets.ModelViewSet):
     serializer_class = OrganizationSerializer
     filter_backends = [DjangoFilterBackend, SearchFilterWithCustomDescription]
     filterset_class = OrgFilter
-    search_fields = ('=inn',)
+    search_fields = ('full_name', 'short_name')
     pagination_class = CustomNumberPagination
     http_method_names = ['get', 'post', 'head', 'delete', 'patch']
     lookup_field = 'uuid'
