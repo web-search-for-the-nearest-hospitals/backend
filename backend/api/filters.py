@@ -7,7 +7,7 @@ from organizations.models import Organization
 
 class SearchFilterWithCustomDescription(default_filters.SearchFilter):
     search_title = 'Поиск'
-    search_description = 'Параметр поиска по ИНН'
+    search_description = 'Поиск по полному и сокращенному наименованиям'
 
 
 class NumberInFilter(django_filters.BaseInFilter,
