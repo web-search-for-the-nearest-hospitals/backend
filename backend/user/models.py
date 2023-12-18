@@ -40,15 +40,10 @@ class User(AbstractUser):
         null=True,
     )
     phone = models.CharField(
-        verbose_name="номер телефона", 
-        max_length=15, 
-        blank=True, 
-        null=True
+        verbose_name="номер телефона", max_length=15, blank=True, null=True
     )
     date_of_birth = models.DateField(
-        verbose_name="дата рождения", 
-        blank=True, 
-        null=True
+        verbose_name="дата рождения", blank=True, null=True
     )
 
     def __str__(self):
