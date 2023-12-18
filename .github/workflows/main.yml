@@ -81,3 +81,14 @@ jobs:
             echo BACKEND_HOSTS=${{ secrets.BACKEND_HOSTS }} >> .env
             echo CSRF_TRUSTED_ORIGINS=${{ secrets.CSRF_TRUSTED_ORIGINS }} >> .env
             sudo docker compose -p infra up -d --build 
+
+  deploy_notifications:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@master
+    - name: send deploy notification
+      uses: appleboy/discord-action@master
+      with:
+        webhook_id: ${{ secrets.WEBHOOK_ID }}
+        webhook_token: ${{ secrets.WEBHOOK_TOKEN }}
+        message: ${{ github.workflow }} успешно выполнен!
