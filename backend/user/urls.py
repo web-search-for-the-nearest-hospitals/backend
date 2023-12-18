@@ -4,14 +4,14 @@ from rest_framework.routers import DefaultRouter
 from user.views import AuthView, UserTokenView, UserViewSet
 
 router = DefaultRouter()
-router.register('users', UserViewSet)
+router.register("users", UserViewSet)
 
 authpatterns = [
-    path('signup/', AuthView.as_view()),
-    path('token/', UserTokenView.as_view()),
+    path("signup/", AuthView.as_view()),
+    path("token/", UserTokenView.as_view()),
 ]
 
 urlpatterns = [
-    path('auth/', include(authpatterns)),
-    path('', include(router.urls)),
+    path("auth/", include(authpatterns)),
+    path("", include(router.urls)),
 ]
