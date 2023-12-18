@@ -84,6 +84,7 @@ jobs:
 
   deploy_notifications:
     runs-on: ubuntu-latest
+    needs: deploy
     steps:
     - uses: actions/checkout@master
     - name: send deploy notification
