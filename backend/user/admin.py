@@ -16,6 +16,6 @@ class UserAdmin(BaseAdmin):
         "first_name",
         "last_name",
         "phone",
-    )   
+    )
     search_fields = ("username", "role", "phone")
     list_filter = ("username",)
