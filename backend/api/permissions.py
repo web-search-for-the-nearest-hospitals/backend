@@ -16,5 +16,5 @@ class IsAdminOwnerModeratorOrReadOnly(permissions.BasePermission):
         return (
             request.method in permissions.SAFE_METHODS
             or request.user.is_admin
-            or request.user.is_member
+            or request.user.is_moderator
         )

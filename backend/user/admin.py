@@ -9,13 +9,13 @@ class BaseAdmin(admin.ModelAdmin):
 
 @admin.register(User)
 class UserAdmin(BaseAdmin):
-    list_display = (
+    fields = (
         "username",
         "email",
         "role",
         "first_name",
         "last_name",
         "phone",
-    )
+    )   
     search_fields = ("username", "role", "phone")
     list_filter = ("username",)

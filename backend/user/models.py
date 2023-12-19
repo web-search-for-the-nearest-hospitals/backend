@@ -10,7 +10,7 @@ class User(AbstractUser):
 
     class Roles(models.TextChoices):
         ADMIN = "admin"
-        MEMBER = "member"
+        MODERATOR = "moderator"
         USER = "user"
 
     USERNAME_FIELD = "email"
@@ -54,5 +54,5 @@ class User(AbstractUser):
         return self.is_staff or self.role == self.Roles.ADMIN
 
     @property
-    def is_member(self):
-        return self.role == self.Roles.MEMBER
+    def is_moderator(self):
+        return self.role == self.Roles.MODERATOR
