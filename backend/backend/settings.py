@@ -1,4 +1,5 @@
 import os
+from datetime import timedelta
 from pathlib import Path
 
 from dotenv import load_dotenv
@@ -18,6 +19,8 @@ ALLOWED_HOSTS = os.getenv('BACKEND_HOSTS', '*').split()
 USE_X_FORWARDED_HOST = (os.getenv('USE_X_FORWARDED_HOST', 'False').lower()
                         == 'true')
 
+AUTH_USER_MODEL = 'user.User'
+
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -29,6 +32,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'django_filters',
     'organizations',
+    'user',
     'api',
     'drf_yasg'
 ]
@@ -102,7 +106,18 @@ MEDIA_ROOT = BASE_DIR / MEDIA_URL
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(days=1),
+    'AUTH_HEADER_TYPES': ('Bearer',),
+}
+
 REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ],
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.AllowAny',
+    ],
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
     'PAGE_SIZE': 10
 }
