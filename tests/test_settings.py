@@ -34,15 +34,10 @@ def test_default_auto_field_set():
 
 def test_database_settings():
     """Проверка настройок базы данных."""
-    assert settings.DATABASES['default']['ENGINE'], (
-        "DB_ENGINE должен быть установлен.")
-    assert settings.DATABASES['default']['NAME'], (
-        "DB_NAME должен быть установлен.")
-    assert settings.DATABASES['default']['USER'], (
-        "POSTGRES_USER должен быть установлен.")
-    assert settings.DATABASES['default']['PASSWORD'], (
-        "POSTGRES_PASSWORD должен быть установлен.")
-    assert settings.DATABASES['default']['HOST'], (
-        "DB_HOST должен быть установлен.")
-    assert settings.DATABASES['default']['PORT'], (
-        "DB_PORT должен быть установлен.")
+    keys_to_check = ['ENGINE', 'NAME', 'USER',
+                               'PASSWORD', 'HOST', 'PORT']
+    for key in keys_to_check:
+        assert key in settings.DATABASES['default'], (
+            f'{key} должен быть установлен.')
+        assert settings.DATABASES['default'][key], (
+            f'{key} должен быть установлен.')
