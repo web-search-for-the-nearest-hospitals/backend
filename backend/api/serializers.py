@@ -16,24 +16,17 @@ class SpecialtySerializer(serializers.ModelSerializer):
         fields = ('code', 'name', 'skill')
 
 
-class OrgDistrictSerializer(serializers.ModelSerializer):
-    """Сериализатор района города организации."""
-
-    id = serializers.IntegerField()
-
-    class Meta:
-        model = District
-        fields = ('id', 'name')
-
-
 class TownSerializer(serializers.ModelSerializer):
     """Сериализатор города."""
 
-    districts = OrgDistrictSerializer(many=True, read_only=True)
+    districts = serializers.SlugRelatedField(
+        many=True, slug_field='name',
+        read_only=True,
+        help_text='Список районов города')
 
     class Meta:
         model = Town
-        fields = ('id', 'name', 'districts')
+        fields = ('name', 'districts')
 
 
 class OrgSpecialtySerializer(serializers.ModelSerializer):

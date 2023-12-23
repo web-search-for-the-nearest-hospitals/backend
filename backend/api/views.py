@@ -134,5 +134,5 @@ class TownViewSet(NoPaginationMixin,
                   RetrieveListViewSet):
     """Вью-сет для города."""
 
-    queryset = Town.objects.all()
+    queryset = Town.objects.prefetch_related('districts').all()
     serializer_class = TownSerializer
