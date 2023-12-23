@@ -74,6 +74,14 @@ class Organization(models.Model):
         blank=True,
         help_text='E-mail организации')
 
+    phone = models.CharField(
+        'Номер телефона',
+        max_length=18,
+        null=True,
+        blank=True,
+        help_text='Телефон организации'
+    )
+
     is_gov = models.BooleanField(
         'Государственная?',
         default=False,

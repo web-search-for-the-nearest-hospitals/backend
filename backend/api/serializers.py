@@ -3,8 +3,9 @@ from django.shortcuts import get_object_or_404
 from django.urls import reverse
 from rest_framework import serializers
 
-from organizations.models import (Organization, OrganizationSpecialty,
-                                  Specialty, District, Town)
+from organizations.models import (District,
+                                  Organization, OrganizationSpecialty,
+                                  Specialty, Town)
 
 
 class SpecialtySerializer(serializers.ModelSerializer):
@@ -15,34 +16,17 @@ class SpecialtySerializer(serializers.ModelSerializer):
         fields = ('code', 'name', 'skill')
 
 
-class OrgDistrictSerializer(serializers.ModelSerializer):
-    """Сериализатор района города организации."""
-
-    id = serializers.IntegerField()
-
-    class Meta:
-        model = District
-        fields = ('id', 'name')
-
-
 class TownSerializer(serializers.ModelSerializer):
     """Сериализатор города."""
 
-    districts = OrgDistrictSerializer(many=True, read_only=True)
+    districts = serializers.SlugRelatedField(
+        many=True, slug_field='name',
+        read_only=True,
+        help_text='Список районов города')
 
     class Meta:
         model = Town
-        fields = ('id', 'name', 'districts')
-
-
-class OrgTownSerializer(serializers.ModelSerializer):
-    """Сериализатор города организации."""
-
-    id = serializers.IntegerField()
-
-    class Meta:
-        model = Town
-        fields = ('id', 'name')
+        fields = ('name', 'districts')
 
 
 class OrgSpecialtySerializer(serializers.ModelSerializer):
@@ -61,21 +45,31 @@ class OrganizationSerializer(serializers.ModelSerializer):
     """Сериализатор организации."""
 
     specialties = OrgSpecialtySerializer(many=True, required=False)
+
     relative_addr = serializers.SerializerMethodField(
         label='relative_addr',
-        help_text='относительный адрес организации',
+        help_text='Относительный адрес организации в сервисе',
         read_only=True)
-    town = OrgTownSerializer()
-    district = OrgDistrictSerializer(required=False)
+
+    town = serializers.SlugRelatedField(
+        queryset=Town.objects.all(),
+        slug_field='name',
+        help_text='Город расположения организации'
+    )
+
+    district = serializers.SlugRelatedField(
+        queryset=District.objects.all(),
+        slug_field='name',
+        help_text='Район расположения организации'
+    )
 
     class Meta:
         model = Organization
         lookup_field = 'uuid'
         fields = ('relative_addr', 'full_name', 'short_name', 'inn',
-                  'factual_address',
-                  'date_added', 'longitude', 'latitude',
+                  'factual_address', 'date_added', 'longitude', 'latitude',
                   'site', 'email', 'is_gov', 'is_full_time',
-                  'about', 'town', 'district', 'specialties')
+                  'about', 'phone', 'town', 'district', 'specialties')
 
     def get_relative_addr(self, obj):
         return reverse('api:organizations-detail',
@@ -108,16 +102,6 @@ class OrganizationSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         specialties = validated_data.pop('specialties')
-        district = validated_data.pop('district', None)
-        town = validated_data.pop('town', None)
-        if district:
-            district = get_object_or_404(District, id=district['id'],
-                                         name=district['name'])
-            validated_data['district'] = district
-        if town:
-            town = get_object_or_404(Town, id=town['id'],
-                                     name=town['name'])
-            validated_data['town'] = town
         with transaction.atomic():
             org = Organization.objects.create(**validated_data)
             self.create_org_specialty(specialties, org)
@@ -125,16 +109,6 @@ class OrganizationSerializer(serializers.ModelSerializer):
 
     def update(self, instance, validated_data):
         specialties = validated_data.pop('specialties')
-        district = validated_data.pop('district', None)
-        town = validated_data.pop('town', None)
-        if district:
-            district = get_object_or_404(District, id=district['id'],
-                                         name=district['name'])
-            validated_data['district'] = district
-        if town:
-            town = get_object_or_404(Town, id=town['id'],
-                                     name=town['name'])
-            validated_data['town'] = town
         with transaction.atomic():
             instance = super().update(instance, validated_data)
             OrganizationSpecialty.objects.filter(
