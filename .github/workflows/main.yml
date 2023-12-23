@@ -80,7 +80,9 @@ jobs:
             echo SECRET_KEY=${{ secrets.SECRET_KEY }} >> .env
             echo BACKEND_HOSTS=${{ secrets.BACKEND_HOSTS }} >> .env
             echo CSRF_TRUSTED_ORIGINS=${{ secrets.CSRF_TRUSTED_ORIGINS }} >> .env
-            sudo docker compose -p infra up -d --build 
+            echo X_FORWARDED_HOST=${{ secrets.X_FORWARDED_HOST }} >> .env
+            sudo docker compose -p infra up -d --build
+            sudo docker compose -p infra exec backend python manage.py migrate
 
   deploy_notifications:
     runs-on: ubuntu-latest
