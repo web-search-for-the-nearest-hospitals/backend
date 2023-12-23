@@ -76,7 +76,7 @@ class OrganizationSerializer(serializers.ModelSerializer):
         fields = ('relative_addr', 'full_name', 'short_name', 'inn',
                   'factual_address', 'date_added', 'longitude', 'latitude',
                   'site', 'email', 'is_gov', 'is_full_time',
-                  'about', 'town', 'district', 'specialties')
+                  'about', 'phone', 'town', 'district', 'specialties')
 
     def get_relative_addr(self, obj):
         return reverse('api:organizations-detail',

@@ -87,7 +87,8 @@ class GenerateOrgParser(OrgParser):
                 email=Person(locale=Locale.RU).email(),
                 is_gov=random.choice([True, False]),
                 is_full_time=random.choice([True, False]),
-                about=Text(locale=Locale.RU).text(random.randint(2, 10))
+                about=Text(locale=Locale.RU).text(random.randint(2, 10)),
+                phone=Person(locale=Locale.RU).phone_number()
             )
             orgs.append(org)
 
