@@ -1,5 +1,7 @@
 from django.conf import settings
 
+KEYS_TO_CHECK = ['ENGINE', 'NAME', 'USER', 'PASSWORD', 'HOST', 'PORT']
+
 
 def test_secret_key_set():
     """ Проверка, что секретный ключ установлен."""
@@ -34,9 +36,7 @@ def test_default_auto_field_set():
 
 def test_database_settings():
     """Проверка настройок базы данных."""
-    keys_to_check = ['ENGINE', 'NAME', 'USER',
-                               'PASSWORD', 'HOST', 'PORT']
-    for key in keys_to_check:
+    for key in KEYS_TO_CHECK:
         assert key in settings.DATABASES['default'], (
             f'{key} должен быть установлен.')
         assert settings.DATABASES['default'][key], (
