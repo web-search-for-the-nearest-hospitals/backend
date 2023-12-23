@@ -10,30 +10,35 @@ class SearchFilterWithCustomDescription(default_filters.SearchFilter):
     search_description = 'Поиск по полному и сокращенному наименованиям'
 
 
-class NumberInFilter(django_filters.BaseInFilter,
-                     django_filters.NumberFilter):
-    pass
-
-
 class OrgFilter(filters.FilterSet):
     """Фильтр по свойствам организаций."""
 
-    specialties = django_filters.CharFilter(
+    specialty = django_filters.CharFilter(
         lookup_expr="exact",
         field_name='specialties__specialty__name',
-        label='Фильтр по наличию специальностей'
+        label='Фильтр по специальности врача'
     )
 
-    districts = NumberInFilter(
-        lookup_expr='in',
-        field_name='district__id',
-        label='Фильтр по районам <IN [ARRAY]>'
+    district = django_filters.CharFilter(
+        lookup_expr='exact',
+        field_name='district__name',
+        label='Фильтр по названию района расположения организации'
+    )
+
+    town = django_filters.CharFilter(
+        lookup_expr='exact',
+        field_name='town__name',
+        label='Фильтр по названию города расположения организации'
     )
 
     is_gov = django_filters.BooleanFilter(
         label='Фильтр по государственным и негосударственным организациям'
     )
 
+    is_full_time = django_filters.BooleanFilter(
+        label='Фильтр по круглосуточным организациям'
+    )
+
     class Meta:
         model = Organization
-        fields = ['specialties', 'districts', 'is_gov']
+        fields = ['specialty', 'town', 'district', 'is_gov', 'is_full_time']
