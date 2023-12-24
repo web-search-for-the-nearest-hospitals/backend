@@ -3,7 +3,7 @@ import http
 from django.utils.decorators import method_decorator
 from django_filters.rest_framework import DjangoFilterBackend
 from drf_yasg.utils import swagger_auto_schema
-from rest_framework import viewsets
+from rest_framework import viewsets, permissions
 from rest_framework.response import Response
 
 from organizations.models import Organization, Specialty, Town
@@ -80,6 +80,15 @@ class OrganizationViewSet(viewsets.ModelViewSet):
             .order_by('distance')
             .all()
         )
+
+    def get_permissions(self):
+        """Временная заглушка, чтобы не баловались POST-методами."""
+
+        if self.action in ('create', 'update', 'destroy'):
+            permission_classes = [permissions.IsAuthenticated]
+        else:
+            permission_classes = [permissions.AllowAny]
+        return [permission() for permission in permission_classes]
 
     serializer_class = OrganizationSerializer
     filter_backends = [DjangoFilterBackend, SearchFilterWithCustomDescription]
