@@ -1,8 +1,14 @@
 import csv
-
+import re
 from django.core.management.base import BaseCommand
 
 from organizations.models import Specialty
+
+pattern = re.compile(r'[Вв]рач-')
+
+
+def shorten_doctor_spec(spec: str) -> str:
+    return re.sub(pattern, '', spec).capitalize()
 
 
 class Command(BaseCommand):
@@ -26,7 +32,7 @@ class Command(BaseCommand):
             specialties = [
                 Specialty(code=row[0].replace('.', '-'),
                           name=row[1],
-                          skill=row[2])
+                          skill=shorten_doctor_spec(row[2]))
                 for row in reader_rows
             ]
         Specialty.objects.bulk_create(specialties)
