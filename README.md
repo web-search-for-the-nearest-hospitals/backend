@@ -7,12 +7,12 @@
 * Проект развернут на [удаленном сервере](http://45.86.181.61/api/).
 * Настроен workflow, содержащий следующие этапы: проведение тестов по pep-8; 
   доставка backend docker image на Docker Hub; автоматический deploy из 
-  ветки develop. 
+  ветки develop; оповещение об успешном завершении workflow в Discord. 
 * Созданы модели Организация (Organization), Специальность (Specialty), 
   Город (Town) и Район (District), настроены связи между ними.
 * Реализована первая версия бизнес-логики проекта на ресурсах 
-  /api/organizations/, /api/specialties/ и /api/towns/. Примеры запросов и 
-  ответов можно найти в [Вики](https://github.com/web-search-for-the-nearest-hospitals/backend/wiki/API).
+  /api/organizations/, /api/specialties/ и /api/towns/. Документацию 
+  можно найти [на сервере](http://45.86.181.61/redoc/).
 * Добавлены management-команды по заполнению реальными и тестовыми данными - 
   `fill_test_orgs <num>`, `fill_specialties <path_to_csv>` и 
   `fill_cities_district <path_to_csv>`.
