@@ -1,0 +1,98 @@
+- model: organizations.town
+  pk: 1
+  fields:
+    name: Калуга
+    longitude: 36.26134
+    latitude: 54.51367
+- model: organizations.town
+  pk: 2
+  fields:
+    name: Ярославль
+    longitude: 39.89381
+    latitude: 57.62655
+- model: organizations.district
+  pk: 1
+  fields:
+    name: Ленинский
+    town: 1
+- model: organizations.district
+  pk: 2
+  fields:
+    name: Московский
+    town: 1
+- model: organizations.district
+  pk: 3
+  fields:
+    name: Октябрьский
+    town: 1
+- model: organizations.district
+  pk: 4
+  fields:
+    name: Куровской
+    town: 1
+- model: organizations.district
+  pk: 5
+  fields:
+    name: Красноперекопский
+    town: 2
+- model: organizations.district
+  pk: 6
+  fields:
+    name: Фрунзенский
+    town: 2
+- model: organizations.district
+  pk: 7
+  fields:
+    name: Ленинский
+    town: 2
+- model: organizations.district
+  pk: 8
+  fields:
+    name: Заволжский
+    town: 2
+- model: organizations.district
+  pk: 9
+  fields:
+    name: Дзержинский
+    town: 2
+- model: organizations.district
+  pk: 10
+  fields:
+    name: Новый Ярославль
+    town: 2
+- model: organizations.organization
+  pk: 1
+  fields:
+    full_name: Детская городская больница, детское поликлиническое отделение № 6
+    short_name: ДГБ, детское отделение № 6
+    inn:
+    factual_address: улица Радищева, 6, Калуга
+    date_added: 2023-12-25
+    longitude: 36.293222
+    latitude: 54.547449
+    site: detstvo-kaluga-new.ru
+    email:
+    phone: +7 (4842) 55-43-78
+    is_gov: true
+    is_full_time: false
+    about:
+    town: 1
+    district: 3
+- model: organizations.organization
+  pk: 2
+  fields:
+    full_name: ОБЩЕСТВО С ОГРАНИЧЕННОЙ ОТВЕТСТВЕННОСТЬЮ "КЛИНИКА ЗДОРОВЬЯ"
+    short_name: Клиника Здоровья
+    inn: 4027119829
+    factual_address: ул. Телевизионная д.31
+    date_added: 2023-12-25
+    longitude: 36.262419
+    latitude: 54.526178
+    site: zdorovie-kaluga.ru
+    email:
+    phone: +7 (4842) 55-15-15
+    is_gov: false
+    is_full_time: false
+    about: Здесь всегда чисто, уютно, никаких очередей и суеты. Калужане все чаще рекомендуют обращаться за медицинской помощью именно к врачам этой клиники.
+    town: 1
+    district: 2
