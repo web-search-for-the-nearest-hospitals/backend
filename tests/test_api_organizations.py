@@ -1,49 +1,43 @@
-import requests
-import uuid
-
-BASE_URL = 'http://localhost:8000/api/organizations'
+import pytest
+from django.urls import reverse
 
 
-def test_get_organizations_list():
-    '''Проверяет, что сервер возвращает статус код 200,
-    и ответ содержит необходимые поля для списка организаций.'''
-    response = requests.get(BASE_URL)
-    assert response.status_code == 200, (
-        f'Ошибка запроса: {response.status_code}')
-
-    data = response.json()
-
-    assert 'count' in data
-    assert 'next' in data
-    assert 'previous' in data
-    assert 'results' in data
-
-    if data['results']:
-        assert isinstance(data['results'], list)
-        organization_fields = ['relative_addr', 'full_name',
-                               'short_name', 'factual_address', 'longitude',
-                               'latitude', 'is_gov']
-
-        for org in data['results']:
-            assert isinstance(org, dict)
-            for field in organization_fields:
-                assert field in org
+API_BASE_URL = 'http://localhost:8000/api/organizations'
 
 
-def test_get_organization_by_uuid():
-    ''''Проверяет, что сервер возвращает статус код 200 (ОК),
-    и ответ содержит ожидаемые поля для информации об одной организации.'''
-    organization_uuid = str(uuid.uuid4())
+@pytest.fixture
+def api_url():
+    return f'{API_BASE_URL}/organizations'
 
-    response = requests.get(f'{BASE_URL}/{organization_uuid}')
-    assert response.status_code == 200, (
-        f'Ошибка запроса: {response.status_code}')
+
+@pytest.mark.django_db
+def test_get_organizations(api_client):
+    response = api_client.get('/api/organizations')
+    assert response.status_code == 200
 
     data = response.json()
+    assert all(key in data for key in ['count', 'next', 'previous', 'results'])
 
-    organization_fields = ['full_name', 'short_name', 'inn',
-                           'factual_address', 'longitude', 'latitude',
-                           'site', 'email', 'is_gov', 'about']
+    results = data.get('results', [])
+    assert isinstance(results, list)
 
-    for field in organization_fields:
-        assert field in data
+    for result in results:
+        assert isinstance(result, dict)
+        expected_keys = ['relative_addr', 'full_name', 'short_name',
+                         'factual_address', 'longitude', 'latitude', 'is_gov']
+        assert all(key in result for key in expected_keys)
+
+
+@pytest.mark.django_db
+def test_get_organization_by_uuid(api_client, sample_organization):
+    organization_uuid = sample_organization.uuid
+    url = reverse('organization-detail', kwargs={'uuid': organization_uuid})
+
+    response = api_client.get(url)
+    assert response.status_code == 200
+
+    expected_keys = ['full_name', 'short_name', 'inn',
+                     'factual_address', 'longitude', 'latitude',
+                     'site', 'email', 'is_gov', 'about']
+    data = response.json()
+    assert all(key in data for key in expected_keys)
