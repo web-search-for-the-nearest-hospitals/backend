@@ -1,7 +1,12 @@
 from django.contrib import admin
 
 from .models import (Organization, OrganizationSpecialty, Specialty, Town,
-                     District)
+                     District, OrganizationBusinessHour)
+
+
+class BusinessHourInline(admin.StackedInline):
+    model = OrganizationBusinessHour
+    extra = 7
 
 
 @admin.register(Organization)
@@ -11,6 +16,7 @@ class OrganizationAdminModel(admin.ModelAdmin):
     list_display = ('full_name', 'short_name', 'inn', 'factual_address',
                     'date_added', 'longitude', 'latitude', 'uuid')
     search_fields = ('inn__exact',)
+    inlines = [BusinessHourInline, ]
 
 
 @admin.register(Specialty)
