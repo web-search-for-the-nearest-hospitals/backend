@@ -28,8 +28,8 @@ class OrgBusinessHourSerializer(serializers.ModelSerializer):
     def validate(self, attrs):
         if attrs['from_hour'] > attrs['to_hour']:
             raise serializers.ValidationError(
-                {"to_hour": "Время окончания рабочего дня не может быть раньше "
-                            "времени начала рабочего дня"}
+                {"to_hour": "Время окончания рабочего дня не может быть"
+                            " раньше времени начала рабочего дня"}
             )
         return super(OrgBusinessHourSerializer, self).validate(attrs)
 
