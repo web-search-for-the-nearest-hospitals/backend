@@ -7,7 +7,7 @@ from organizations.models import Organization
 
 class SearchFilterWithCustomDescription(default_filters.SearchFilter):
     search_title = 'Поиск'
-    search_description = 'Поиск по полному и сокращенному наименованиям'
+    search_description = 'Поиск по сокращенному наименованию организации'
 
 
 class OrgFilter(filters.FilterSet):
@@ -15,7 +15,7 @@ class OrgFilter(filters.FilterSet):
 
     specialty = django_filters.CharFilter(
         lookup_expr="exact",
-        field_name='specialties__specialty__name',
+        field_name='specialties__specialty__skill',
         label='Фильтр по специальности врача'
     )
 

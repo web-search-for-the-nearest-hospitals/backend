@@ -10,9 +10,11 @@ from organizations.models import Organization, Specialty, Town
 from .filters import SearchFilterWithCustomDescription, OrgFilter
 from .mixins import (RetrieveListViewSet, NoPaginationMixin)
 from .paginators import CustomNumberPagination
-from .serializers import (OrganizationSerializer, SpecialtySerializer,
-                          TownSerializer)
 from .schemas import ORGS_SCHEMAS, SPEC_SCHEMAS, TOWN_SCHEMAS
+from .serializers import (OrganizationCreateUpdateSerializer,
+                          OrganizationListSerializer,
+                          OrganizationRetrieveSerializer, SpecialtySerializer,
+                          TownSerializer)
 from .utils import count_distance
 
 
@@ -60,6 +62,16 @@ class OrganizationViewSet(viewsets.ModelViewSet):
         """Переопределяем, чтобы сортировать результаты
         выборки по отдаленности от переданных координат."""
 
+        if self.action == 'retrieve':
+            return (
+                Organization
+                .objects
+                .prefetch_related('specialties',
+                                  'town',
+                                  'business_hours')
+                .all()
+            )
+
         long = self.request.query_params.get('long', self.LONG)
         lat = self.request.query_params.get('lat', self.LAT)
 
@@ -75,11 +87,22 @@ class OrganizationViewSet(viewsets.ModelViewSet):
         return (
             Organization
             .objects
-            .prefetch_related('specialties', 'district', 'town')
+            .prefetch_related('specialties', 'district', 'town',
+                              'business_hours')
             .annotate(distance=count_distance(long, lat))
             .order_by('distance')
             .all()
         )
+
+    def get_serializer_class(self):
+        """Определяем какой сериализатор использовать в зависимости от
+        метода."""
+
+        if self.action == 'retrieve':
+            return OrganizationRetrieveSerializer
+        if self.action == 'list':
+            return OrganizationListSerializer
+        return OrganizationCreateUpdateSerializer
 
     def get_permissions(self):
         """Временная заглушка, чтобы не баловались POST-методами."""
@@ -90,10 +113,9 @@ class OrganizationViewSet(viewsets.ModelViewSet):
             permission_classes = [permissions.AllowAny]
         return [permission() for permission in permission_classes]
 
-    serializer_class = OrganizationSerializer
     filter_backends = [DjangoFilterBackend, SearchFilterWithCustomDescription]
     filterset_class = OrgFilter
-    search_fields = ('full_name', 'short_name')
+    search_fields = ('short_name',)
     pagination_class = CustomNumberPagination
     http_method_names = ['get', 'post', 'head', 'delete', 'patch']
     lookup_field = 'uuid'

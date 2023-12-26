@@ -1,16 +1,23 @@
 from django.contrib import admin
 
 from .models import (Organization, OrganizationSpecialty, Specialty, Town,
-                     District)
+                     District, OrganizationBusinessHour)
+
+
+class BusinessHourInline(admin.StackedInline):
+    """Встраиваемая модель админки для рабочих часов организации."""
+
+    model = OrganizationBusinessHour
+    extra = 7
 
 
 @admin.register(Organization)
 class OrganizationAdminModel(admin.ModelAdmin):
     """Модель админки для организаций."""
 
-    list_display = ('full_name', 'short_name', 'inn', 'factual_address',
+    list_display = ('short_name', 'factual_address',
                     'date_added', 'longitude', 'latitude', 'uuid')
-    search_fields = ('inn__exact',)
+    inlines = [BusinessHourInline, ]
 
 
 @admin.register(Specialty)
