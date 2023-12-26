@@ -42,7 +42,7 @@ class OrganizationBusinessHour(models.Model):
         constraints = [
             models.UniqueConstraint(
                 fields=("organization", "day"),
-                name="unique_org_day")
+                name="unique_orgbusinesshour_org_day")
         ]
 
     def __str__(self) -> str:

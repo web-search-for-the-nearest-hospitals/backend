@@ -5,6 +5,8 @@ from .models import (Organization, OrganizationSpecialty, Specialty, Town,
 
 
 class BusinessHourInline(admin.StackedInline):
+    """Встраиваемая модель админки для рабочих часов организации."""
+
     model = OrganizationBusinessHour
     extra = 7
 
@@ -13,9 +15,8 @@ class BusinessHourInline(admin.StackedInline):
 class OrganizationAdminModel(admin.ModelAdmin):
     """Модель админки для организаций."""
 
-    list_display = ('full_name', 'short_name', 'inn', 'factual_address',
+    list_display = ('short_name', 'factual_address',
                     'date_added', 'longitude', 'latitude', 'uuid')
-    search_fields = ('inn__exact',)
     inlines = [BusinessHourInline, ]
 
 

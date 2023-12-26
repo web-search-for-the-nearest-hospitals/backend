@@ -19,28 +19,17 @@ class Organization(models.Model):
         unique=True,
         help_text='Уникальный идентификатор организации')
 
-    full_name = models.TextField(
-        'Полное наименование',
+    short_name = models.CharField(
+        'Наименование',
         null=False,
         blank=False,
-        help_text='Полное наименование организации')
+        help_text='Наименование организации',
+        max_length=250)
 
-    short_name = models.TextField(
-        'Сокращенное наименование',
-        null=True,
-        blank=True,
-        help_text='Сокращенное наименование организации')
-
-    inn = models.CharField(
-        'ИНН',
-        max_length=12,
-        null=True,
-        blank=True,
-        help_text='ИНН организации')
-
-    factual_address = models.TextField(
+    factual_address = models.CharField(
         'Адрес',
-        help_text='Адрес местонахождения организации')
+        help_text='Адрес местонахождения организации',
+        max_length=250)
 
     date_added = models.DateTimeField(
         'Дата создания организации в БД',
@@ -66,13 +55,6 @@ class Organization(models.Model):
         blank=True,
         help_text='Сайт организации'
     )
-
-    email = models.EmailField(
-        'E-mail организации',
-        max_length=100,
-        null=True,
-        blank=True,
-        help_text='E-mail организации')
 
     phone = models.CharField(
         'Номер телефона',
@@ -119,9 +101,14 @@ class Organization(models.Model):
     )
 
     class Meta:
-        ordering = ['full_name']
+        ordering = None
         verbose_name = 'Организация'
         verbose_name_plural = 'Организации'
+        constraints = [
+            models.UniqueConstraint(
+                fields=("short_name", "factual_address"),
+                name="unique_organization_short_name_factual_address")
+        ]
 
     def __str__(self):
-        return f'<Организация {self.full_name}>'
+        return f'<Организация {self.short_name}>'

@@ -35,7 +35,7 @@ def drop_specialties(apps, schema_editor):
 
 class Migration(migrations.Migration):
     dependencies = [
-        ('organizations', '0002_added_phone_to_org'),
+        ('organizations', '0001_initial'),
     ]
 
     operations = [
