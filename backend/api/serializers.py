@@ -1,7 +1,6 @@
 from django.db import transaction
 from django.shortcuts import get_object_or_404
 from django.urls import reverse
-
 from rest_framework import serializers
 
 from organizations.models import (District,
@@ -16,10 +15,28 @@ class SpecialtySerializer(serializers.ModelSerializer):
     class Meta:
         model = Specialty
         fields = ('code', 'name', 'skill')
+        extra_kwargs = {
+            'code': {'required': False},
+            'name': {'required': False},
+            'skill': {'required': False}
+        }
 
 
-class OrgBusinessHourSerializer(serializers.ModelSerializer):
-    """Сериализатор рабочих часов организации."""
+class TownSerializer(serializers.ModelSerializer):
+    """Сериализатор города."""
+
+    districts = serializers.SlugRelatedField(
+        many=True, slug_field='name',
+        read_only=True,
+        help_text='Список районов города')
+
+    class Meta:
+        model = Town
+        fields = ('name', 'districts', 'latitude', 'longitude')
+
+
+class OrgBusinessHourCreateUpdateSerializer(serializers.ModelSerializer):
+    """Сериализатор рабочих часов организации для POST & PATCH - методов."""
 
     class Meta:
         model = OrganizationBusinessHour
@@ -31,7 +48,8 @@ class OrgBusinessHourSerializer(serializers.ModelSerializer):
                 {"to_hour": "Время окончания рабочего дня не может быть"
                             " раньше времени начала рабочего дня"}
             )
-        return super(OrgBusinessHourSerializer, self).validate(attrs)
+        return super(
+            OrgBusinessHourCreateUpdateSerializer, self).validate(attrs)
 
 
 class OrgBusinessHourReadSerializer(serializers.ModelSerializer):
@@ -50,21 +68,8 @@ class OrgBusinessHourReadSerializer(serializers.ModelSerializer):
         }
 
 
-class TownSerializer(serializers.ModelSerializer):
-    """Сериализатор города."""
-
-    districts = serializers.SlugRelatedField(
-        many=True, slug_field='name',
-        read_only=True,
-        help_text='Список районов города')
-
-    class Meta:
-        model = Town
-        fields = ('name', 'districts')
-
-
-class OrgSpecialtySerializer(serializers.ModelSerializer):
-    """Сериализатор специальностей организации."""
+class OrgSpecialtyCreateUpdateSerializer(serializers.ModelSerializer):
+    """Сериализатор специальностей организации для POST & PATCH - методов."""
 
     code = serializers.CharField(source='specialty.code')
     name = serializers.CharField(source='specialty.name')
@@ -75,16 +80,26 @@ class OrgSpecialtySerializer(serializers.ModelSerializer):
         fields = ('code', 'name', 'skill', 'working_hours', 'day_of_the_week')
 
 
+class OrgSpecialtyRetrieveSerializer(serializers.ModelSerializer):
+    """Сериализатор специальностей организации для RETRIEVE-метода."""
+
+    skill = serializers.CharField(
+        source='specialty.skill',
+        help_text='Специальность врача',
+        required=False)
+
+    class Meta:
+        model = OrganizationSpecialty
+        fields = ('skill',)
+
+
 class OrganizationRetrieveSerializer(serializers.ModelSerializer):
-    """Сериализатор организации для RETRIEVE."""
+    """Сериализатор организации для RETRIEVE-метода."""
 
-    specialties = OrgSpecialtySerializer(many=True, read_only=True)
-
-    town = serializers.SlugRelatedField(
-        slug_field='name',
+    specialties = OrgSpecialtyRetrieveSerializer(
         read_only=True,
-        help_text='Город расположения организации',
-    )
+        many=True,
+        help_text='Имеющиеся в организации специальности врачей')
 
     business_hours = OrgBusinessHourReadSerializer(
         many=True,
@@ -95,15 +110,15 @@ class OrganizationRetrieveSerializer(serializers.ModelSerializer):
         model = Organization
         lookup_field = 'uuid'
         fields = ('short_name', 'factual_address', 'site', 'about', 'phone',
-                  'town', 'is_full_time', 'business_hours', 'specialties')
+                  'is_full_time', 'business_hours', 'specialties')
         extra_kwargs = {
             'short_name': {'required': False},
-            'factual_address': {'required': False}
+            'factual_address': {'required': False},
         }
 
 
 class OrganizationListSerializer(serializers.ModelSerializer):
-    """Сериализатор организации для LIST."""
+    """Сериализатор организации для LIST-метода."""
 
     relative_addr = serializers.SerializerMethodField(
         label='relative_addr',
@@ -147,7 +162,7 @@ class OrganizationListSerializer(serializers.ModelSerializer):
 class OrganizationCreateUpdateSerializer(serializers.ModelSerializer):
     """Сериализатор организации для CREATE & UPDATE."""
 
-    specialties = OrgSpecialtySerializer(many=True, required=False)
+    specialties = OrgSpecialtyCreateUpdateSerializer(many=True, required=False)
 
     relative_addr = serializers.SerializerMethodField(
         label='relative_addr',
@@ -166,7 +181,7 @@ class OrganizationCreateUpdateSerializer(serializers.ModelSerializer):
         help_text='Район расположения организации'
     )
 
-    business_hours = OrgBusinessHourSerializer(
+    business_hours = OrgBusinessHourCreateUpdateSerializer(
         many=True,
         help_text='Рабочие часы организации')
 

@@ -1,14 +1,11 @@
-import http
-
 from django.utils.decorators import method_decorator
 from django_filters.rest_framework import DjangoFilterBackend
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework import viewsets, permissions
-from rest_framework.response import Response
 
 from organizations.models import Organization, Specialty, Town
 from .filters import SearchFilterWithCustomDescription, OrgFilter
-from .mixins import (RetrieveListViewSet, NoPaginationMixin)
+from .mixins import (RetrieveListViewSet, NoPaginationMixin, ListViewSet)
 from .paginators import CustomNumberPagination
 from .schemas import ORGS_SCHEMAS, SPEC_SCHEMAS, TOWN_SCHEMAS
 from .serializers import (OrganizationCreateUpdateSerializer,
@@ -24,7 +21,8 @@ from .utils import count_distance
         tags=ORGS_SCHEMAS["list"]["tags"],
         operation_summary=ORGS_SCHEMAS["list"]["summary"],
         operation_description=ORGS_SCHEMAS["list"]["description"],
-        pagination_class=CustomNumberPagination)
+        pagination_class=CustomNumberPagination,
+        manual_parameters=ORGS_SCHEMAS["list"]["params"])
 )
 @method_decorator(
     name="retrieve",
@@ -67,28 +65,29 @@ class OrganizationViewSet(viewsets.ModelViewSet):
                 Organization
                 .objects
                 .prefetch_related('specialties',
-                                  'town',
                                   'business_hours')
                 .all()
             )
 
         long = self.request.query_params.get('long', self.LONG)
         lat = self.request.query_params.get('lat', self.LAT)
-
         try:
             long = float(long)
             lat = float(lat)
         except ValueError:
-            return Response(
-                status=http.HTTPStatus.BAD_REQUEST,
-                data={'detail': 'long и lat должны быть типа float'}
+            return (
+                Organization
+                .objects
+                .prefetch_related('business_hours')
+                .select_related('town', 'district')
+                .all()
             )
 
         return (
             Organization
             .objects
-            .prefetch_related('specialties', 'district', 'town',
-                              'business_hours')
+            .prefetch_related('business_hours')
+            .select_related('town', 'district')
             .annotate(distance=count_distance(long, lat))
             .order_by('distance')
             .all()
@@ -117,7 +116,8 @@ class OrganizationViewSet(viewsets.ModelViewSet):
     filterset_class = OrgFilter
     search_fields = ('short_name',)
     pagination_class = CustomNumberPagination
-    http_method_names = ['get', 'post', 'head', 'delete', 'patch']
+    # http_method_names = ['get', 'post', 'head', 'delete', 'patch']
+    http_method_names = ['get', 'head']
     lookup_field = 'uuid'
 
 
@@ -129,16 +129,8 @@ class OrganizationViewSet(viewsets.ModelViewSet):
         operation_description=SPEC_SCHEMAS["list"]["description"],
     )
 )
-@method_decorator(
-    name="retrieve",
-    decorator=swagger_auto_schema(
-        tags=SPEC_SCHEMAS["retrieve"]["tags"],
-        operation_summary=SPEC_SCHEMAS["retrieve"]["summary"],
-        operation_description=SPEC_SCHEMAS["retrieve"]["description"],
-        responses=SPEC_SCHEMAS["retrieve"]["responses"])
-)
 class SpecialtyViewSet(NoPaginationMixin,
-                       RetrieveListViewSet):
+                       ListViewSet):
     """Вью-сет для специальности."""
 
     queryset = Specialty.objects.all()

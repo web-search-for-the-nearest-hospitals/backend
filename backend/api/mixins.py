@@ -8,6 +8,12 @@ class RetrieveListViewSet(mixins.RetrieveModelMixin,
     pass
 
 
+class ListViewSet(mixins.ListModelMixin,
+                  viewsets.GenericViewSet):
+    """Миксин для LIST метода."""
+    pass
+
+
 class NoPaginationMixin:
     """Миксин без пагинации."""
 
