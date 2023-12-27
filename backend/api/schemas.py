@@ -12,6 +12,19 @@ RESPONSES_FOR_404_ERROR = {
                             })
 }
 
+PARAMS_FOR_DISTANCE_FILTER = [
+    openapi.Parameter("lat",
+                      openapi.IN_QUERY,
+                      description="Значение широты для фильтрации",
+                      type=openapi.TYPE_NUMBER,
+                      default=54.513675),
+    openapi.Parameter("long",
+                      openapi.IN_QUERY,
+                      description="Значение долготы для фильтрации",
+                      type=openapi.TYPE_NUMBER,
+                      default=36.261342),
+]
+
 ORGS_SCHEMAS = {
     "list":
         {
@@ -23,7 +36,8 @@ ORGS_SCHEMAS = {
                             "по специальностям врачей, районам, "
                             "государственной или коммерческой организации,"
                             "а также по круглосуточным организациям"),
-            "responses": []
+            "responses": [],
+            "params": PARAMS_FOR_DISTANCE_FILTER
         },
     "retrieve":
         {

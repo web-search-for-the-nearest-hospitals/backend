@@ -32,11 +32,13 @@ class OrgFilter(filters.FilterSet):
     )
 
     is_gov = django_filters.BooleanFilter(
-        label='Фильтр по государственным и негосударственным организациям'
+        label='Фильтр по государственным и негосударственным организациям',
+        field_name='is_gov'
     )
 
     is_full_time = django_filters.BooleanFilter(
-        label='Фильтр по круглосуточным организациям'
+        label='Фильтр по круглосуточным организациям',
+        field_name='is_full_time'
     )
 
     class Meta:
