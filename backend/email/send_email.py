@@ -6,6 +6,7 @@ from dotenv import load_dotenv
 
 
 class Email:
+
     def __init__(self):
         """Инициализация объекта Email."""
         load_dotenv()
