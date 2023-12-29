@@ -1,3 +1,4 @@
+from .appointment import Appointment
 from .district import District
 from .organization import Organization
 from .orghours import OrganizationBusinessHour

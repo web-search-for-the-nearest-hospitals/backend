@@ -1,4 +1,3 @@
-from django.contrib.postgres import fields
 from django.db import models
 
 from .organization import Organization
@@ -32,6 +31,7 @@ class OrganizationSpecialty(models.Model):
         on_delete=models.CASCADE,
         related_name='specialties'
     )
+
     specialty = models.ForeignKey(
         Specialty,
         verbose_name='Специальность',
