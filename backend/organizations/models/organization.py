@@ -109,6 +109,9 @@ class Organization(models.Model):
                 fields=("short_name", "factual_address"),
                 name="unique_organization_short_name_factual_address")
         ]
+        indexes = [
+            models.Index(fields=['short_name', 'factual_address'])
+        ]
 
     def __str__(self):
         return f'<Организация {self.short_name}>'

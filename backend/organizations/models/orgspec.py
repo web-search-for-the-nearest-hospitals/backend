@@ -43,12 +43,14 @@ class OrganizationSpecialty(models.Model):
         'День недели',
         choices=DAYS_OF_WEEK
     )
-    working_hours = fields.ArrayField(
-        models.CharField(
-            max_length=11
-        ),
-        verbose_name='Часы работы'
-    )
+
+    from_hour = models.TimeField(
+        "Время начала работы",
+        help_text='Время начала работы врача')
+
+    to_hour = models.TimeField(
+        'Время окончания работы',
+        help_text='Время окончания работы врача')
 
     class Meta:
         ordering = None
@@ -57,9 +59,9 @@ class OrganizationSpecialty(models.Model):
         constraints = [
             models.UniqueConstraint(
                 fields=['organization', 'specialty', 'day_of_the_week'],
-                name='unique_orgspec_organization_specialty_day')
+                name='organizations_unique_orgspec_schedule')
         ]
 
     def __str__(self):
-        return (f'<Организация {self.organization.short_name} + Специальность '
-                f'{self.specialty.name}>')
+        return (f'<Организация {self.organization} + Специальность '
+                f'{self.specialty}>')

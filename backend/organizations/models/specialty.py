@@ -23,4 +23,4 @@ class Specialty(models.Model):
         verbose_name_plural = 'Специальности'
 
     def __str__(self):
-        return f'<Специальность {self.code} ({self.name})>'
+        return f'<Специальность {self.skill}>'

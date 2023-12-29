@@ -1,7 +1,7 @@
 from django.db import transaction
 from django.shortcuts import get_object_or_404
 from django.urls import reverse
-from rest_framework import serializers
+from rest_framework import serializers, validators
 
 from organizations.models import (District,
                                   Organization, OrganizationSpecialty,
@@ -71,13 +71,21 @@ class OrgBusinessHourReadSerializer(serializers.ModelSerializer):
 class OrgSpecialtyCreateUpdateSerializer(serializers.ModelSerializer):
     """Сериализатор специальностей организации для POST & PATCH - методов."""
 
-    code = serializers.CharField(source='specialty.code')
-    name = serializers.CharField(source='specialty.name')
-    skill = serializers.CharField(source='specialty.skill')
+    skill = serializers.CharField(source='specialty.skill',
+                                  help_text='Специальность врача')
 
     class Meta:
         model = OrganizationSpecialty
-        fields = ('code', 'name', 'skill', 'working_hours', 'day_of_the_week')
+        fields = ('skill', 'day_of_the_week', 'from_hour', 'to_hour')
+
+    def validate(self, attrs):
+        if attrs['from_hour'] > attrs['to_hour']:
+            raise serializers.ValidationError(
+                {"to_hour": "Время окончания рабочего дня не может быть"
+                            " раньше времени начала рабочего дня"}
+            )
+        return super(
+            OrgSpecialtyCreateUpdateSerializer, self).validate(attrs)
 
 
 class OrgSpecialtyRetrieveSerializer(serializers.ModelSerializer):
@@ -192,6 +200,12 @@ class OrganizationCreateUpdateSerializer(serializers.ModelSerializer):
                   'longitude', 'latitude', 'site', 'is_gov', 'is_full_time',
                   'about', 'phone', 'town', 'district', 'business_hours',
                   'specialties')
+        validators = [
+            validators.UniqueTogetherValidator(
+                queryset=Organization.objects.all(),
+                fields=['short_name', 'factual_address']
+            )
+        ]
 
     def get_relative_addr(self, obj):
         return reverse('api:organizations-detail',
@@ -204,20 +218,18 @@ class OrganizationCreateUpdateSerializer(serializers.ModelSerializer):
 
         for specialty in specialties:
             spec_data = specialty['specialty']
-            code = spec_data['code']
-            name = spec_data['name']
             skill = spec_data['skill']
-            working_hours = specialty['working_hours']
             day_of_the_week = specialty['day_of_the_week']
-            current_specialty = get_object_or_404(
-                Specialty, code=code,
-                name=name, skill=skill)
+            from_hour = specialty['from_hour']
+            to_hour = specialty['to_hour']
+            current_specialty = get_object_or_404(Specialty, skill=skill)
             new_org_specialties.append(
                 OrganizationSpecialty(
                     organization=org,
                     specialty=current_specialty,
-                    working_hours=working_hours,
-                    day_of_the_week=day_of_the_week
+                    day_of_the_week=day_of_the_week,
+                    from_hour=from_hour,
+                    to_hour=to_hour
                 )
             )
         OrganizationSpecialty.objects.bulk_create(new_org_specialties)
