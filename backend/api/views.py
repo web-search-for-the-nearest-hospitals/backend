@@ -60,7 +60,7 @@ class OrganizationViewSet(viewsets.ModelViewSet):
         """Переопределяем, чтобы сортировать результаты
         выборки по отдаленности от переданных координат."""
 
-        if self.action == 'retrieve':
+        if self.action in ('retrieve', 'delete', 'partial_update'):
             return (
                 Organization
                 .objects

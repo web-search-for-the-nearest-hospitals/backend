@@ -31,8 +31,8 @@ class SpecialtyAdminModel(admin.ModelAdmin):
 class OrganizationSpecialtyAdminModel(admin.ModelAdmin):
     """Модель админки для расписания специальностей в больничке."""
 
-    list_display = ('organization', 'specialty', 'working_hours',
-                    'day_of_the_week')
+    list_display = ('organization', 'specialty',
+                    'day_of_the_week', 'from_hour', 'to_hour')
 
 
 @admin.register(Town)
