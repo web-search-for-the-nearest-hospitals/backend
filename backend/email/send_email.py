@@ -1,62 +1,76 @@
-import os
 import smtplib
-from email.mime.text import MIMEText
+import logging
 from email.mime.multipart import MIMEMultipart
-from dotenv import load_dotenv
+from email.mime.text import MIMEText
+import os
+import sys
+
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.append(BASE_DIR)
+from backend.settings import EMAIL_SETTINGS
 
 
 class Email:
-
     def __init__(self):
         """Инициализация объекта Email."""
-        load_dotenv()
-
-        self.smtp_server = os.getenv('SMTP_SERVER')
-        self.smtp_port = int(os.getenv('SMTP_PORT'))
-        self.smtp_user = os.getenv('SMTP_USER')
-        self.smtp_password = os.getenv('SMTP_PASSWORD')
-        self.to_email = os.getenv('TO_EMAIL')
+        self.smtp_user = EMAIL_SETTINGS.get('SMTP_USER')
 
     def setup_connection(self):
-        """Установка соединения с почтовым сервером."""
-        try:
-            self.server = smtplib.SMTP(self.smtp_server, self.smtp_port)
-            self.server.starttls()
-            self.server.login(self.smtp_user, self.smtp_password)
-        except smtplib.SMTPException as e:
-            print(f"Ошибка при установке соединения: {e}")
+        """Установка соединения с SMTP-сервером."""
+        smtp_server = EMAIL_SETTINGS.get('SMTP_SERVER')
+        smtp_port_str = EMAIL_SETTINGS.get('SMTP_PORT')
 
-    def send_message(self, subject, body):
-        """Отправка сообщения. Текст письма."""
-        try:
-            message = MIMEMultipart()
-            message['From'] = self.smtp_user
-            message['To'] = self.to_email
-            message['Subject'] = subject
-            message.attach(MIMEText(body, 'plain'))
+        if not smtp_server or not smtp_port_str:
+            logging.error(
+                "SMTP_SERVER и/или SMTP_PORT отсутствуют в настройках.")
+            return None
 
-            self.server.sendmail(self.smtp_user,
-                                 self.to_email,
-                                 message.as_string())
-        except smtplib.SMTPException as e:
-            print(f"Ошибка при отправке сообщения: {e}")
-
-    def close_connection(self):
-        """Закрытие соединения с почтовым сервером."""
         try:
-            self.server.quit()
+            server = smtplib.SMTP(smtp_server, int(smtp_port_str))
+            server.starttls()
+            server.login(self.smtp_user, EMAIL_SETTINGS.get('SMTP_PASSWORD'))
+            return server
         except smtplib.SMTPException as e:
-            print(f"Ошибка при закрытии соединения: {e}")
+            logging.error(f"Ошибка при установке соединения: {e}")
+            return None
+
+    def create_msg(self, subject, body, to):
+        """Создание письма."""
+        message = MIMEMultipart()
+        message['From'] = self.smtp_user
+        message['To'] = to
+        message['Subject'] = subject
+        message.attach(MIMEText(body, 'plain'))
+        return message
+
+    @staticmethod
+    def close_connection(server):
+        """Закрытие соединения с SMTP-сервером."""
+        try:
+            server.quit()
+        except smtplib.SMTPException as e:
+            logging.error(f"Ошибка при закрытии соединения: {e}")
+
+    def send_message(self, subject, body, to):
+        """Отправка электронного письма."""
+        server = self.setup_connection()
+        if not server:
+            return
+
+        message = self.create_msg(subject, body, to)
+
+        try:
+            server.sendmail(self.smtp_user, to.split(','), message.as_string())
+            logging.info("Сообщение успешно отправлено")
+        except smtplib.SMTPException as e:
+            logging.error(f"Ошибка при отправке сообщения: {e}")
+        finally:
+            self.close_connection(server)
 
 
 if __name__ == "__main__":
-    email_client = Email()
+    logging.basicConfig(level=logging.INFO)
 
-    try:
-        email_client.setup_connection()
-        subject = "Тестовое сообщение"
-        body = "Тест."
-        email_client.send_message(subject, body)
-        print("Тестовое сообщение отправлено успешно.")
-    finally:
-        email_client.close_connection()
+    email = Email()
+    email.send_message(
+        subject="Тестовое сообщение", body='test', to='rofel@fm.ru')
