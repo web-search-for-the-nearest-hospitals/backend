@@ -1,7 +1,8 @@
 from django.contrib import admin
 
-from .models import (Organization, OrganizationSpecialty, Specialty, Town,
-                     District, OrganizationBusinessHour)
+from .models import (Appointment, District, Organization,
+                     OrganizationSpecialty, OrganizationBusinessHour,
+                     Specialty, Town)
 
 
 class BusinessHourInline(admin.StackedInline):
@@ -47,3 +48,12 @@ class DistrictAdminModel(admin.ModelAdmin):
     """Модель админки для района."""
 
     list_display = ('name', 'town')
+
+
+@admin.register(Appointment)
+class AppointmentAdminModel(admin.ModelAdmin):
+    """Модель админки для записи к врачу."""
+
+    list_display = ('id', 'organization', 'specialty', 'client',
+                    'datetime_start',
+                    'status')
