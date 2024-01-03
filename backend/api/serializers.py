@@ -96,9 +96,14 @@ class OrgSpecialtyRetrieveSerializer(serializers.ModelSerializer):
         help_text='Специальность врача',
         required=False)
 
+    code = serializers.CharField(
+        source='specialty.code',
+        help_text='Код специальности',
+        required=False)
+
     class Meta:
         model = OrganizationSpecialty
-        fields = ('skill',)
+        fields = ('skill', 'code')
 
 
 class OrganizationRetrieveSerializer(serializers.ModelSerializer):
