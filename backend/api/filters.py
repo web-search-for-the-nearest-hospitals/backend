@@ -18,7 +18,7 @@ class NumberFilterWOFilter(django_filters.NumberFilter):
         if value in ([], (), {}, "", None):
             return qs
         if self.distinct:
-            qs = qs.distinct()
+            return qs.distinct()
         return qs
 
 
@@ -64,8 +64,8 @@ class OrgFilter(django_filters.FilterSet):
     )
 
     def filter_queryset(self, queryset):
-        """Добавляем фильтрацию по удаленности
-         от координат широты и долготы."""
+        """Добавляем фильтрацию по удаленности организаций
+        от переданных координат широты и долготы."""
 
         qs = super().filter_queryset(queryset)
         lat = self.form.cleaned_data.get('lat') or 54.51367

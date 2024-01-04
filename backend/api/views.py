@@ -55,10 +55,13 @@ from .serializers import (OrganizationCreateUpdateSerializer,
 class OrganizationViewSet(viewsets.ModelViewSet):
     """Вью-сет организации."""
 
+    ACTIONS_WITH_ONE_INSTANCE = ('retrieve', 'delete', 'partial_update',
+                                 'get_free_tickets')
+
     def get_queryset(self):
         """Оптимизируем походы в базу данных."""
 
-        if self.action in ('retrieve', 'delete', 'partial_update'):
+        if self.action in self.ACTIONS_WITH_ONE_INSTANCE:
             return (
                 Organization
                 .objects
@@ -72,6 +75,13 @@ class OrganizationViewSet(viewsets.ModelViewSet):
             .select_related('town', 'district')
             .all()
         )
+
+    def filter_queryset(self, queryset):
+        """Убираем фильтрацию с действий, работающих с одной сущностью."""
+
+        if self.action in self.ACTIONS_WITH_ONE_INSTANCE:
+            return queryset
+        return super().filter_queryset(queryset)
 
     def get_serializer_class(self):
         """Определяем какой сериализатор использовать в зависимости от
