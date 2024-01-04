@@ -3,7 +3,7 @@ from django_filters.rest_framework import DjangoFilterBackend
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework import viewsets, permissions
 
-from organizations.models import Organization, Specialty, Town
+from organizations.models import Appointment, Organization, Specialty, Town
 from .filters import SearchFilterWithCustomDescription, OrgFilter
 from .mixins import (RetrieveListViewSet, NoPaginationMixin, ListViewSet)
 from .paginators import CustomNumberPagination
@@ -12,7 +12,6 @@ from .serializers import (OrganizationCreateUpdateSerializer,
                           OrganizationListSerializer,
                           OrganizationRetrieveSerializer, SpecialtySerializer,
                           TownSerializer)
-from .utils import count_distance
 
 
 @method_decorator(
@@ -54,42 +53,23 @@ from .utils import count_distance
         operation_description=ORGS_SCHEMAS["partial_update"]["description"])
 )
 class OrganizationViewSet(viewsets.ModelViewSet):
-    LAT, LONG = 54.513675, 36.261342
+    """Вью-сет организации."""
 
     def get_queryset(self):
-        """Переопределяем, чтобы сортировать результаты
-        выборки по отдаленности от переданных координат."""
+        """Оптимизируем походы в базу данных."""
 
         if self.action in ('retrieve', 'delete', 'partial_update'):
             return (
                 Organization
                 .objects
-                .prefetch_related('specialties',
-                                  'business_hours')
+                .prefetch_related('specialties', 'business_hours')
                 .all()
             )
-
-        long = self.request.query_params.get('long', self.LONG)
-        lat = self.request.query_params.get('lat', self.LAT)
-        try:
-            long = float(long)
-            lat = float(lat)
-        except ValueError:
-            return (
-                Organization
-                .objects
-                .prefetch_related('business_hours')
-                .select_related('town', 'district')
-                .all()
-            )
-
         return (
             Organization
             .objects
             .prefetch_related('business_hours')
             .select_related('town', 'district')
-            .annotate(distance=count_distance(long, lat))
-            .order_by('distance')
             .all()
         )
 

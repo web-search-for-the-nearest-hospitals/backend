@@ -1,16 +1,28 @@
 import django_filters
-from django_filters import rest_framework as filters
-from rest_framework import filters as default_filters
+from rest_framework import filters
 
 from organizations.models import Organization
+from .utils import count_distance
 
 
-class SearchFilterWithCustomDescription(default_filters.SearchFilter):
+class SearchFilterWithCustomDescription(filters.SearchFilter):
     search_title = 'Поиск'
     search_description = 'Поиск по сокращенному наименованию организации'
 
 
-class OrgFilter(filters.FilterSet):
+class NumberFilterWOFilter(django_filters.NumberFilter):
+    """Фильтр, но не фильтр =)
+    Забираем валидацию поля без фильтрации по нему."""
+
+    def filter(self, qs, value):
+        if value in ([], (), {}, "", None):
+            return qs
+        if self.distinct:
+            qs = qs.distinct()
+        return qs
+
+
+class OrgFilter(django_filters.FilterSet):
     """Фильтр по свойствам организаций."""
 
     specialty = django_filters.CharFilter(
@@ -41,6 +53,30 @@ class OrgFilter(filters.FilterSet):
         field_name='is_full_time'
     )
 
+    lat = NumberFilterWOFilter(
+        label='Значение широты для фильтрации',
+        field_name='latitude'
+    )
+
+    long = NumberFilterWOFilter(
+        label='Значение долготы для фильтрации',
+        field_name='longitude'
+    )
+
+    def filter_queryset(self, queryset):
+        """Добавляем фильтрацию по удаленности
+         от координат широты и долготы."""
+
+        qs = super().filter_queryset(queryset)
+        lat = self.form.cleaned_data.get('lat') or 54.51367
+        long = self.form.cleaned_data.get('long') or 36.26134
+        return (
+            qs
+            .annotate(distance=count_distance(long, lat))
+            .order_by('distance')
+        )
+
     class Meta:
         model = Organization
-        fields = ['specialty', 'town', 'district', 'is_gov', 'is_full_time']
+        fields = ['specialty', 'town', 'district', 'is_gov', 'is_full_time',
+                  'lat', 'long']
