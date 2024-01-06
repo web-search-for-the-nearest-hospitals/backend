@@ -12,6 +12,15 @@ SECRET_KEY = os.getenv('SECRET_KEY')
 CSRF_TRUSTED_ORIGINS = os.getenv('CSRF_TRUSTED_ORIGINS',
                                  'http://localhost').split()
 
+load_dotenv()
+EMAIL_SETTINGS = {
+    'SMTP_SERVER': os.getenv('SMTP_SERVER'),
+    'SMTP_PORT': int(os.getenv('SMTP_PORT')),
+    'SMTP_USER': os.getenv('SMTP_USER'),
+    'SMTP_PASSWORD': os.getenv('SMTP_PASSWORD'),
+
+}
+
 DEBUG = False
 
 ALLOWED_HOSTS = os.getenv('BACKEND_HOSTS', '*').split()
