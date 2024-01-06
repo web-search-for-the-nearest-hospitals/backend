@@ -1,17 +1,21 @@
+import http
+
+from django.shortcuts import get_object_or_404
 from django.utils.decorators import method_decorator
 from django_filters.rest_framework import DjangoFilterBackend
 from drf_yasg.utils import swagger_auto_schema
-from rest_framework import viewsets, permissions
-
 from organizations.models import Appointment, Organization, Specialty, Town
+from rest_framework import viewsets, permissions, decorators, response
+
 from .filters import SearchFilterWithCustomDescription, OrgFilter
 from .mixins import (RetrieveListViewSet, NoPaginationMixin, ListViewSet)
 from .paginators import CustomNumberPagination
 from .schemas import ORGS_SCHEMAS, SPEC_SCHEMAS, TOWN_SCHEMAS
-from .serializers import (OrganizationCreateUpdateSerializer,
+from .serializers import (AppointmentListSerializer,
+                          OrganizationCreateUpdateSerializer,
                           OrganizationListSerializer,
                           OrganizationRetrieveSerializer, SpecialtySerializer,
-                          TownSerializer)
+                          TownSerializer, AppointmentParamSerializer)
 
 
 @method_decorator(
@@ -109,6 +113,44 @@ class OrganizationViewSet(viewsets.ModelViewSet):
     # http_method_names = ['get', 'post', 'head', 'delete', 'patch']
     http_method_names = ['get', 'head']
     lookup_field = 'uuid'
+
+    @swagger_auto_schema(
+        name="get_free_tickets",
+        tags=ORGS_SCHEMAS["get_free_tickets"]["tags"],
+        operation_summary=ORGS_SCHEMAS["get_free_tickets"]["summary"],
+        operation_description=ORGS_SCHEMAS["get_free_tickets"]["description"],
+        pagination_class=NoPaginationMixin,
+        responses={"200": AppointmentListSerializer},
+        query_serializer=AppointmentParamSerializer,
+    )
+    @decorators.action(detail=True,
+                       methods=['GET'],
+                       url_path='free-tickets',
+                       url_name='org-free-tickets',
+                       filter_backends=[])
+    def get_free_tickets(self, request, uuid):
+        """Формирует свободные диапазоны времени для
+        переданных даты и специальности врача."""
+
+        serializer = AppointmentParamSerializer(data=request.query_params)
+        serializer.is_valid(raise_exception=True)
+
+        which_date = serializer.validated_data.get('which_date')
+        spec = serializer.validated_data.get('spec_code')
+
+        org = get_object_or_404(Organization.objects.only('id'), uuid=uuid)
+
+        free_appointments = (
+            Appointment
+            .objects
+            .only('id', 'datetime_start')
+            .filter(organization=org, status='free', specialty=spec,
+                    datetime_start__date=which_date)
+            .all()
+        )
+        serializer = AppointmentListSerializer(free_appointments, many=True)
+        return response.Response(status=http.HTTPStatus.OK,
+                                 data=serializer.data)
 
 
 @method_decorator(

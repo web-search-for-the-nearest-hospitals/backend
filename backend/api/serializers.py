@@ -1,12 +1,13 @@
+import datetime
+
 from django.db import transaction
 from django.shortcuts import get_object_or_404
 from django.urls import reverse
-from rest_framework import serializers, validators
-
-from organizations.models import (District,
+from organizations.models import (Appointment, District,
                                   Organization, OrganizationSpecialty,
                                   OrganizationBusinessHour,
                                   Specialty, Town)
+from rest_framework import serializers, validators
 
 
 class SpecialtySerializer(serializers.ModelSerializer):
@@ -276,3 +277,40 @@ class OrganizationCreateUpdateSerializer(serializers.ModelSerializer):
             ).delete()
             self.create_org_business_hours(business_hours, instance)
         return instance
+
+
+class AppointmentParamSerializer(serializers.Serializer):
+    """Сериализатор параметров запроса свободных временных окошек записи
+    к врачу организации."""
+
+    spec_code = serializers.CharField(
+        required=True,
+        help_text='Код специальности врача для приема')
+
+    which_date = serializers.DateField(
+        required=True,
+        help_text='Дата приема')
+
+    def validate_which_date(self, value):
+        if datetime.date.today() > value:
+            raise serializers.ValidationError(
+                "Дата записи не может быть позднее сегодняшней.")
+        return value
+
+
+class AppointmentListSerializer(serializers.ModelSerializer):
+    """Сериализатор параметров запроса свободных временных окошек записи
+    к врачу организации."""
+
+    id = serializers.IntegerField(
+        help_text='ID талона на запись',
+        required=False)
+
+    datetime_start = serializers.DateTimeField(
+        help_text='Дата и время начала приема',
+        label=None,
+        required=False)
+
+    class Meta:
+        model = Appointment
+        fields = ('id', 'datetime_start')

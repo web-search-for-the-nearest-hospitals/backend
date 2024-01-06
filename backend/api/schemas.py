@@ -3,6 +3,7 @@ from drf_yasg import openapi
 MAIN_TAG = 'Организации'
 SPEC_TAG = 'Специальности врачей'
 TOWN_TAG = 'Города'
+APPOINTMENT_TAG = 'Запись к врачу'
 
 RESPONSES_FOR_404_ERROR = {
     '404': openapi.Response('Страница не найдена.',
@@ -70,6 +71,15 @@ ORGS_SCHEMAS = {
                             'создал эту больницу (OWNER)'),
             "responses": []
         },
+    "get_free_tickets":
+        {
+            "tags": [MAIN_TAG],
+            "summary": "Получение списка талонов для записи на прием в "
+                       "организацию",
+            "description": ('Страница доступна пользователям с ролями '
+                            'пользователь и администратор.'),
+            "responses": [],
+        }
 }
 
 SPEC_SCHEMAS = {
