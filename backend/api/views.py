@@ -4,9 +4,9 @@ from django.shortcuts import get_object_or_404
 from django.utils.decorators import method_decorator
 from django_filters.rest_framework import DjangoFilterBackend
 from drf_yasg.utils import swagger_auto_schema
-from organizations.models import Appointment, Organization, Specialty, Town
 from rest_framework import viewsets, permissions, decorators, response
 
+from organizations.models import Appointment, Organization, Specialty, Town
 from .filters import SearchFilterWithCustomDescription, OrgFilter
 from .mixins import (RetrieveListViewSet, NoPaginationMixin, ListViewSet)
 from .paginators import CustomNumberPagination
