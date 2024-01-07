@@ -138,13 +138,11 @@ class OrganizationViewSet(viewsets.ModelViewSet):
         which_date = serializer.validated_data.get('which_date')
         spec = serializer.validated_data.get('spec_code')
 
-        org = get_object_or_404(Organization.objects.only('id'), uuid=uuid)
-
         free_appointments = (
             Appointment
             .objects
             .only('id', 'datetime_start')
-            .filter(organization=org, status='free', specialty=spec,
+            .filter(organization__uuid=uuid, status='free', specialty=spec,
                     datetime_start__date=which_date)
             .all()
         )
