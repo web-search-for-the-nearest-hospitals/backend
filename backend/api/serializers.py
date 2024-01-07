@@ -1,5 +1,7 @@
 import datetime
+import re
 
+from django.core.validators import RegexValidator
 from django.db import transaction
 from django.shortcuts import get_object_or_404
 from django.urls import reverse
@@ -8,6 +10,7 @@ from organizations.models import (Appointment, District,
                                   OrganizationBusinessHour,
                                   Specialty, Town)
 from rest_framework import serializers, validators
+from user.models import User
 
 
 class SpecialtySerializer(serializers.ModelSerializer):
@@ -314,3 +317,35 @@ class AppointmentListSerializer(serializers.ModelSerializer):
     class Meta:
         model = Appointment
         fields = ('id', 'datetime_start')
+
+
+class AppointmentCreateSerializer(serializers.Serializer):
+    """Сериализатор записи к специальности врача организации."""
+
+    fio_pattern = re.compile(r'([А-ЯЁ][а-яё]+)\s([А-ЯЁ][а-яё]+)\s([А-ЯЁ]['
+                             r'а-яё]+)$')
+    phone_pattern = re.compile(r'^(\+7|7|8)?[\s\-]?\(?[489][0-9]{2}\)?[\s\-]?'
+                               r'[0-9]{3}[\s\-]?[0-9]{2}[\s\-]?[0-9]{2}$')
+
+    fio = serializers.CharField(
+        min_length=8,
+        max_length=255,
+        required=True,
+        validators=[RegexValidator(regex=fio_pattern)],
+        help_text='ФИО пациента'
+    )
+
+    phone = serializers.CharField(
+        required=True,
+        validators=[RegexValidator(regex=phone_pattern)],
+        help_text='Номер телефона пациента')
+
+    email = serializers.EmailField(
+        min_length=4,
+        max_length=254,
+        required=True,
+        help_text='Электронная почта пациента')
+
+    def __init__(self, *args, **kwargs):
+        kwargs['partial'] = False
+        super().__init__(*args, **kwargs)

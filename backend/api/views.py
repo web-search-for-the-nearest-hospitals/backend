@@ -1,6 +1,5 @@
 import http
 
-from django.shortcuts import get_object_or_404
 from django.utils.decorators import method_decorator
 from django_filters.rest_framework import DjangoFilterBackend
 from drf_yasg.utils import swagger_auto_schema
@@ -8,10 +7,12 @@ from rest_framework import viewsets, permissions, decorators, response
 
 from organizations.models import Appointment, Organization, Specialty, Town
 from .filters import SearchFilterWithCustomDescription, OrgFilter
-from .mixins import (RetrieveListViewSet, NoPaginationMixin, ListViewSet)
+from .mixins import (RetrieveListViewSet, NoPaginationMixin, ListViewSet,
+                     UpdateViewSet)
 from .paginators import CustomNumberPagination
 from .schemas import ORGS_SCHEMAS, SPEC_SCHEMAS, TOWN_SCHEMAS
 from .serializers import (AppointmentListSerializer,
+                          AppointmentCreateSerializer,
                           OrganizationCreateUpdateSerializer,
                           OrganizationListSerializer,
                           OrganizationRetrieveSerializer, SpecialtySerializer,
@@ -189,3 +190,101 @@ class TownViewSet(NoPaginationMixin,
 
     queryset = Town.objects.prefetch_related('districts').all()
     serializer_class = TownSerializer
+
+
+class AppointmentViewSet(NoPaginationMixin,
+                         UpdateViewSet):
+    """Вью-сет для записи к врачу."""
+
+    queryset = Appointment.objects.all()
+    serializer_class = AppointmentCreateSerializer
+
+    def update(self, request, *args, **kwargs):
+        partial = kwargs.pop('partial', True)
+        instance = self.get_object()
+
+        serializer = self.get_serializer(data=request.data,
+                                         partial=partial)
+        serializer.is_valid(raise_exception=True)
+        print(serializer.validated_data)
+        # self.perform_update(serializer)
+
+        if getattr(instance, '_prefetched_objects_cache', None):
+            # If 'prefetch_related' has been applied to a queryset, we need to
+            # forcibly invalidate the prefetch cache on the instance.
+            instance._prefetched_objects_cache = {}
+
+        return response.Response(serializer.data)
+
+    """
+    def update(self, instance, validated_data):
+        last_name, first_name, _ = validated_data.pop('fio').split()
+
+        with transaction.atomic():
+            user, _ = User.objects.get_or_create(email=validated_data.get(
+                'email'))
+            user.last_name = last_name
+            user.first_name = first_name
+            user.phone = validated_data.get('phone')
+            user.save()
+            appointment = get_object_or_404(
+                Appointment.objects.select_for_update(),
+                id=instance.id)
+            appointment.client = user
+            appointment.save()
+        return instance
+
+    def update(self, request, *args, **kwargs):
+        instance = self.get_object()
+        instance.name = request.data.get("name")
+        instance.save()
+
+        serializer = self.get_serializer(instance)
+        serializer.is_valid(raise_exception=True)
+        self.perform_update(serializer)
+
+        return Response(serializer.data)
+
+    def update(self, request, *args, **kwargs):
+        partial = kwargs.pop('partial', False)
+
+        with transaction.atomic():
+            # Lock row using select_for update, but
+            # actually use the instance from get_object,
+            # so that we don't lose any mixin goodies.
+            # This results in TWO db queries, which we've
+            # decide to just live with for now.
+            InspectionItem.objects.select_for_update().get(pk=kwargs['pk'])
+            instance = self.get_object()
+
+            serializer = self.get_serializer(instance, data=request.data,
+                                             partial=partial)
+            serializer.is_valid(raise_exception=True)
+            self.perform_update(serializer)
+
+        if getattr(instance, '_prefetched_objects_cache', None):
+            # If 'prefetch_related' has been applied to a queryset, we need to
+            # forcibly invalidate the prefetch cache on the instance.
+            instance._prefetched_objects_cache = {}
+
+    def update(self, instance, validated_data):
+        raise_errors_on_nested_writes('update', self, validated_data)
+        info = model_meta.get_field_info(instance)
+        update_fields = []
+
+        # Simply set each attribute on the instance, and then save it.
+        # Note that unlike `.create()` we don't need to treat many-to-many
+        # relationships as being a special case. During updates we already
+        # have an instance pk for the relationships to be associated with.
+
+        for attr, value in validated_data.items():
+            update_fields.append(attr)
+            if attr in info.relations and info.relations[attr].to_many:
+                field = getattr(instance, attr)
+                field.set(value)
+            else:
+                setattr(instance, attr, value)
+        instance.save(update_fields=update_fields)
+
+        return instance
+    """
