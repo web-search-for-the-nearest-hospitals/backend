@@ -1,3 +1,4 @@
+import datetime
 import http
 
 from django.utils.decorators import method_decorator
@@ -137,14 +138,21 @@ class OrganizationViewSet(viewsets.ModelViewSet):
         which_date = serializer.validated_data.get('which_date')
         spec = serializer.validated_data.get('spec_code')
 
-        free_appointments = (
+        free_appointments_query = (
             Appointment
             .objects
             .only('id', 'datetime_start')
-            .filter(organization__uuid=uuid, status='free', specialty=spec,
-                    datetime_start__date=which_date)
-            .all()
+            .filter(organization__uuid=uuid, status=Appointment.FREE,
+                    specialty=spec, datetime_start__date=which_date)
         )
+
+        if which_date == datetime.date.today():
+            free_appointments_query = (
+                free_appointments_query
+                .filter(datetime_start__gte=datetime.datetime.now())
+            )
+
+        free_appointments = free_appointments_query.all()
         serializer = AppointmentListSerializer(free_appointments, many=True)
         return response.Response(status=http.HTTPStatus.OK,
                                  data=serializer.data)
