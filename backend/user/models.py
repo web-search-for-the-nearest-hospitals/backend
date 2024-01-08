@@ -32,16 +32,27 @@ class User(AbstractUser):
         verbose_name="Имя",
         max_length=150,
         null=True,
+        blank=True,
         help_text="Имя пользователя"
     )
     last_name = models.CharField(
         verbose_name="Фамилия",
         max_length=150,
         null=True,
+        blank=True,
         help_text="Фамилия пользователя"
     )
+
+    third_name = models.CharField(
+        verbose_name="Отчество",
+        max_length=150,
+        null=True,
+        blank=True,
+        help_text="Отчество пользователя"
+    )
+
     phone = models.CharField(
-        verbose_name="Номер телефона", max_length=15, blank=True, null=True,
+        verbose_name="Номер телефона", max_length=20, blank=True, null=True,
         help_text="Номер телефона пользователя"
     )
     date_of_birth = models.DateField(
