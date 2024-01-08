@@ -10,7 +10,7 @@ class RetrieveListViewSet(mixins.RetrieveModelMixin,
 
 class UpdateViewSet(mixins.UpdateModelMixin,
                     viewsets.GenericViewSet):
-    """Миксин для PATCH метода."""
+    """Миксин для PUT метода."""
     pass
 
 

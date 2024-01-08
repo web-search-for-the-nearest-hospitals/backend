@@ -5,12 +5,12 @@ from django.core.validators import RegexValidator
 from django.db import transaction
 from django.shortcuts import get_object_or_404
 from django.urls import reverse
+from rest_framework import serializers, validators
+
 from organizations.models import (Appointment, District,
                                   Organization, OrganizationSpecialty,
                                   OrganizationBusinessHour,
                                   Specialty, Town)
-from rest_framework import serializers, validators
-from user.models import User
 
 
 class SpecialtySerializer(serializers.ModelSerializer):
@@ -345,7 +345,3 @@ class AppointmentCreateSerializer(serializers.Serializer):
         max_length=254,
         required=True,
         help_text='Электронная почта пациента')
-
-    def __init__(self, *args, **kwargs):
-        kwargs['partial'] = False
-        super().__init__(*args, **kwargs)

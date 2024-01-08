@@ -1,16 +1,24 @@
 from drf_yasg import openapi
 
+APPOINTMENT_TAG = 'Талоны'
 MAIN_TAG = 'Организации'
 SPEC_TAG = 'Специальности врачей'
 TOWN_TAG = 'Города'
-APPOINTMENT_TAG = 'Запись к врачу'
 
-RESPONSES_FOR_404_ERROR = {
-    '404': openapi.Response('Страница не найдена.',
-                            examples={
-                                "application/json": {
-                                    "detail": "Страница не найдена."}
-                            })
+RESPONSE_404 = openapi.Response('Страница не найдена.',
+                                examples={
+                                    "application/json": {
+                                        "detail": "Страница не найдена."}
+                                })
+RESPONSE_FOR_APPOINTMENT = openapi.Response('Нет контента')
+
+RESPONSES_WITH_404 = {
+    '404': RESPONSE_404
+}
+
+RESPONSES_FOR_APPOINTMENT = {
+    '404': RESPONSE_404,
+    '204': RESPONSE_FOR_APPOINTMENT
 }
 
 PARAMS_FOR_DISTANCE_FILTER = [
@@ -43,7 +51,7 @@ ORGS_SCHEMAS = {
             "tags": [MAIN_TAG],
             "summary": "Получение организации",
             "description": "Страница доступна всем пользователям.",
-            "responses": RESPONSES_FOR_404_ERROR
+            "responses": RESPONSES_WITH_404
         },
     "create":
         {
@@ -95,7 +103,7 @@ SPEC_SCHEMAS = {
             "tags": [SPEC_TAG],
             "summary": "Получение специальности",
             "description": "Страница доступна всем пользователям.",
-            "responses": RESPONSES_FOR_404_ERROR
+            "responses": RESPONSES_WITH_404
         }
 }
 
@@ -112,6 +120,16 @@ TOWN_SCHEMAS = {
             "tags": [TOWN_TAG],
             "summary": "Получение города",
             "description": "Страница доступна всем пользователям.",
-            "responses": RESPONSES_FOR_404_ERROR
+            "responses": RESPONSES_WITH_404
+        }
+}
+
+APPOINT_SCHEMAS = {
+    "update":
+        {
+            "tags": [APPOINTMENT_TAG],
+            "summary": "Запись к врачу",
+            "description": "Страница доступна всем пользователям.",
+            "responses": RESPONSES_FOR_APPOINTMENT
         }
 }
