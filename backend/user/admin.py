@@ -19,6 +19,6 @@ class UserAdmin(BaseAdmin):
         "phone",
         "date_of_birth"
     )
-    list_display = ("email", "username", "last_name", "first_name")
+    list_display = ("email", "last_name", "first_name", "role")
 
     search_fields = ("username", "role", "phone")

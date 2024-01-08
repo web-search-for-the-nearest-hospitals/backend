@@ -1,4 +1,5 @@
 from django.contrib.auth.models import AbstractUser
+from django.contrib.auth.validators import UnicodeUsernameValidator
 from django.db import models
 
 
@@ -21,6 +22,15 @@ class User(AbstractUser):
         max_length=254,
         help_text="Email пользователя",
     )
+
+    username = models.CharField(
+        max_length=150, unique=False,
+        validators=[UnicodeUsernameValidator()],
+        verbose_name='Никнейм пользователя',
+        blank=True,
+        null=True
+    )
+
     role = models.CharField(
         max_length=9,
         choices=Roles.choices,
@@ -52,11 +62,16 @@ class User(AbstractUser):
     )
 
     phone = models.CharField(
-        verbose_name="Номер телефона", max_length=20, blank=True, null=True,
+        verbose_name="Номер телефона",
+        max_length=20,
+        blank=True,
+        null=True,
         help_text="Номер телефона пользователя"
     )
     date_of_birth = models.DateField(
-        verbose_name="Дата рождения", blank=True, null=True,
+        verbose_name="Дата рождения",
+        blank=True,
+        null=True,
         help_text="Дата рождения пользователя"
     )
 
