@@ -10,7 +10,7 @@ RESPONSE_404 = openapi.Response('Страница не найдена.',
                                     "application/json": {
                                         "detail": "Страница не найдена."}
                                 })
-RESPONSE_FOR_APPOINTMENT = openapi.Response('Нет контента')
+RESPONSE_204_FOR_APPOINTMENT = openapi.Response('Нет контента')
 
 RESPONSES_WITH_404 = {
     '404': RESPONSE_404
@@ -18,7 +18,7 @@ RESPONSES_WITH_404 = {
 
 RESPONSES_FOR_APPOINTMENT = {
     '404': RESPONSE_404,
-    '204': RESPONSE_FOR_APPOINTMENT
+    '204': RESPONSE_204_FOR_APPOINTMENT
 }
 
 PARAMS_FOR_DISTANCE_FILTER = [
