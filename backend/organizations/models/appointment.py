@@ -8,13 +8,19 @@ from .specialty import Specialty
 class Appointment(models.Model):
     """Запись к специальности врача в организации."""
 
-    STATUSES = (
-        ('free', 'Свободна'),
-        ('planned', 'Запланирована'),
-        ('confirmed', 'Подтверждена'),
-        ('canceled', 'Отменена'),
-        ('finished', 'Завершена'),
-    )
+    FREE = "free"
+    PLANNED = "planned"
+    CONFIRMED = "confirmed"
+    CANCELED = "canceled"
+    FINISHED = "finished"
+
+    STATUSES = [
+        (FREE, 'Свободна'),
+        (PLANNED, 'Запланирована'),
+        (CONFIRMED, 'Подтверждена'),
+        (CANCELED, 'Отменена'),
+        (FINISHED, 'Завершена'),
+    ]
 
     id = models.BigAutoField(
         primary_key=True,

@@ -37,21 +37,25 @@ class AppointmentViewSet(NoPaginationMixin,
         Во втором релизе отсюда уйдет перезапись свойств
         пользователя и его создание.
         """
+        serializer = self.get_serializer(
+            data=request.data,
+            partial=kwargs.pop('partial', False))
+
+        serializer.is_valid(raise_exception=True)
+        data = serializer.validated_data
+        last_name, first_name, third_name = data.pop('fio').split()
 
         with transaction.atomic():
             instance = get_object_or_404(
                 Appointment
                 .objects
-                .only('id')
+                .only('id', 'status')
                 .select_for_update(), pk=kwargs.get('pk')
             )
-            serializer = self.get_serializer(
-                data=request.data,
-                partial=kwargs.pop('partial', False))
-
-            serializer.is_valid(raise_exception=True)
-
-            data = serializer.validated_data
+            if instance.status != Appointment.FREE:
+                return response.Response(
+                    status=http.HTTPStatus.BAD_REQUEST,
+                    data={"detail": "Этот талон уже занят"})
 
             # Создание пользователя здесь - это следствие неуспеваемости
             # фронта в реализации регистрации пользователей
@@ -62,9 +66,6 @@ class AppointmentViewSet(NoPaginationMixin,
                 .only('id')
                 .get_or_create(email=data.get('email'))
             )
-
-            last_name, first_name, third_name = data.pop('fio').split()
-
             user.last_name = last_name
             user.first_name = first_name
             user.third_name = third_name
@@ -74,7 +75,7 @@ class AppointmentViewSet(NoPaginationMixin,
                                'third_name', 'phone']
             )
 
-            instance.client, instance.status = user, 'planned'
+            instance.client, instance.status = user, Appointment.PLANNED
             instance.save(update_fields=['client', 'status'])
 
         return response.Response(status=http.HTTPStatus.NO_CONTENT)
