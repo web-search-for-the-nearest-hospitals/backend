@@ -16,6 +16,10 @@ class Appointment(models.Model):
         ('finished', 'Завершена'),
     )
 
+    id = models.BigAutoField(
+        primary_key=True,
+        help_text='Идентификатор талончика')
+
     organization = models.ForeignKey(
         Organization,
         verbose_name='Организация',

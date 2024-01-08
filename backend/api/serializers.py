@@ -1,9 +1,13 @@
+import datetime
+import re
+
+from django.core.validators import RegexValidator
 from django.db import transaction
 from django.shortcuts import get_object_or_404
 from django.urls import reverse
 from rest_framework import serializers, validators
 
-from organizations.models import (District,
+from organizations.models import (Appointment, District,
                                   Organization, OrganizationSpecialty,
                                   OrganizationBusinessHour,
                                   Specialty, Town)
@@ -276,3 +280,68 @@ class OrganizationCreateUpdateSerializer(serializers.ModelSerializer):
             ).delete()
             self.create_org_business_hours(business_hours, instance)
         return instance
+
+
+class AppointmentParamSerializer(serializers.Serializer):
+    """Сериализатор параметров запроса свободных временных окошек записи
+    к врачу организации."""
+
+    spec_code = serializers.CharField(
+        required=True,
+        help_text='Код специальности врача для приема')
+
+    which_date = serializers.DateField(
+        required=True,
+        help_text='Дата приема')
+
+    def validate_which_date(self, value):
+        if datetime.date.today() > value:
+            raise serializers.ValidationError(
+                "Дата записи не может быть позднее сегодняшней.")
+        return value
+
+
+class AppointmentListSerializer(serializers.ModelSerializer):
+    """Сериализатор параметров запроса свободных временных окошек записи
+    к врачу организации."""
+
+    id = serializers.IntegerField(
+        help_text='ID талона на запись',
+        required=False)
+
+    datetime_start = serializers.DateTimeField(
+        help_text='Дата и время начала приема',
+        label=None,
+        required=False)
+
+    class Meta:
+        model = Appointment
+        fields = ('id', 'datetime_start')
+
+
+class AppointmentCreateSerializer(serializers.Serializer):
+    """Сериализатор записи к специальности врача организации."""
+
+    fio_pattern = re.compile(r'([А-ЯЁ][а-яё]+)\s([А-ЯЁ][а-яё]+)\s([А-ЯЁ]['
+                             r'а-яё]+)$')
+    phone_pattern = re.compile(r'^(\+7|7|8)?[\s\-]?\(?[489][0-9]{2}\)?[\s\-]?'
+                               r'[0-9]{3}[\s\-]?[0-9]{2}[\s\-]?[0-9]{2}$')
+
+    fio = serializers.CharField(
+        min_length=8,
+        max_length=255,
+        required=True,
+        validators=[RegexValidator(regex=fio_pattern)],
+        help_text='ФИО пациента'
+    )
+
+    phone = serializers.CharField(
+        required=True,
+        validators=[RegexValidator(regex=phone_pattern)],
+        help_text='Номер телефона пациента')
+
+    email = serializers.EmailField(
+        min_length=4,
+        max_length=254,
+        required=True,
+        help_text='Электронная почта пациента')

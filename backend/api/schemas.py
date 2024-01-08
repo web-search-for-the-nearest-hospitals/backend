@@ -1,28 +1,35 @@
 from drf_yasg import openapi
 
+APPOINTMENT_TAG = 'Талоны'
 MAIN_TAG = 'Организации'
 SPEC_TAG = 'Специальности врачей'
 TOWN_TAG = 'Города'
 
-RESPONSES_FOR_404_ERROR = {
-    '404': openapi.Response('Страница не найдена.',
-                            examples={
-                                "application/json": {
-                                    "detail": "Страница не найдена."}
-                            })
+RESPONSE_404 = openapi.Response('Страница не найдена.',
+                                examples={
+                                    "application/json": {
+                                        "detail": "Страница не найдена."}
+                                })
+RESPONSE_FOR_APPOINTMENT = openapi.Response('Нет контента')
+
+RESPONSES_WITH_404 = {
+    '404': RESPONSE_404
+}
+
+RESPONSES_FOR_APPOINTMENT = {
+    '404': RESPONSE_404,
+    '204': RESPONSE_FOR_APPOINTMENT
 }
 
 PARAMS_FOR_DISTANCE_FILTER = [
     openapi.Parameter("lat",
                       openapi.IN_QUERY,
-                      description="Значение широты для фильтрации",
                       type=openapi.TYPE_NUMBER,
-                      default=54.513675),
+                      default=54.51367),
     openapi.Parameter("long",
                       openapi.IN_QUERY,
-                      description="Значение долготы для фильтрации",
                       type=openapi.TYPE_NUMBER,
-                      default=36.261342),
+                      default=36.26134),
 ]
 
 ORGS_SCHEMAS = {
@@ -44,7 +51,7 @@ ORGS_SCHEMAS = {
             "tags": [MAIN_TAG],
             "summary": "Получение организации",
             "description": "Страница доступна всем пользователям.",
-            "responses": RESPONSES_FOR_404_ERROR
+            "responses": RESPONSES_WITH_404
         },
     "create":
         {
@@ -72,6 +79,15 @@ ORGS_SCHEMAS = {
                             'создал эту больницу (OWNER)'),
             "responses": []
         },
+    "get_free_tickets":
+        {
+            "tags": [MAIN_TAG],
+            "summary": "Получение списка талонов для записи на прием в "
+                       "организацию",
+            "description": ('Страница доступна пользователям с ролями '
+                            'пользователь и администратор.'),
+            "responses": [],
+        }
 }
 
 SPEC_SCHEMAS = {
@@ -87,7 +103,7 @@ SPEC_SCHEMAS = {
             "tags": [SPEC_TAG],
             "summary": "Получение специальности",
             "description": "Страница доступна всем пользователям.",
-            "responses": RESPONSES_FOR_404_ERROR
+            "responses": RESPONSES_WITH_404
         }
 }
 
@@ -104,6 +120,16 @@ TOWN_SCHEMAS = {
             "tags": [TOWN_TAG],
             "summary": "Получение города",
             "description": "Страница доступна всем пользователям.",
-            "responses": RESPONSES_FOR_404_ERROR
+            "responses": RESPONSES_WITH_404
+        }
+}
+
+APPOINT_SCHEMAS = {
+    "update":
+        {
+            "tags": [APPOINTMENT_TAG],
+            "summary": "Запись к врачу",
+            "description": "Страница доступна всем пользователям.",
+            "responses": RESPONSES_FOR_APPOINTMENT
         }
 }
