@@ -63,11 +63,16 @@ class AppointmentViewSet(NoPaginationMixin,
                 .get_or_create(email=data.get('email'))
             )
 
-            last_name, first_name, _ = data.pop('fio').split()
+            last_name, first_name, third_name = data.pop('fio').split()
 
-            user.last_name, user.first_name = last_name, first_name
+            user.last_name = last_name
+            user.first_name = first_name
+            user.third_name = third_name
             user.phone = data.get('phone')
-            user.save(update_fields=['last_name', 'first_name', 'phone'])
+            user.save(
+                update_fields=['last_name', 'first_name',
+                               'third_name', 'phone']
+            )
 
             instance.client, instance.status = user, 'planned'
             instance.save(update_fields=['client', 'status'])
