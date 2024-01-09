@@ -47,7 +47,7 @@ class TownAdminModel(admin.ModelAdmin):
 class DistrictAdminModel(admin.ModelAdmin):
     """Модель админки для района."""
 
-    list_display = ('name', 'town')
+    list_display = ('name', 'town', 'longitude', 'latitude')
 
 
 @admin.register(Appointment)

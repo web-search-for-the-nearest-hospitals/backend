@@ -17,8 +17,19 @@ class District(models.Model):
         verbose_name='Город',
         null=True,
         related_name='districts',
-        help_text='Город'
-    )
+        help_text='Город')
+
+    longitude = models.FloatField(
+        verbose_name='Долгота',
+        help_text='Долгота расположения центра '
+                  'района',
+        null=True, blank=False)
+
+    latitude = models.FloatField(
+        verbose_name='Широта',
+        help_text='Широта расположения центра '
+                  'района',
+        null=True, blank=False)
 
     class Meta:
         ordering = ['name']
