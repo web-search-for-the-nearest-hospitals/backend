@@ -9,7 +9,8 @@ router = DefaultRouter()
 router.register('organizations', OrganizationViewSet,
                 basename='organizations')
 router.register('specialties', SpecialtyViewSet)
-router.register('towns', TownViewSet)
+router.register('towns', TownViewSet,
+                basename='towns')
 router.register('appointments', AppointmentViewSet)
 
 urlpatterns = [
