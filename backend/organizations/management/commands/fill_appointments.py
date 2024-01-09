@@ -2,6 +2,17 @@ from django.core.management.base import BaseCommand
 
 from organizations.models import Appointment, OrganizationSpecialty
 
+from datetime import datetime, timedelta
+
+
+def datetime_range(start, end, delta):
+    current = start
+    while current < end:
+        yield current
+        current += delta
+
+
+
 
 class Command(BaseCommand):
     """
@@ -36,7 +47,17 @@ class Command(BaseCommand):
         days = options.get('N')
         duration = options.get('D')
         # Appointments,
+        appointments = []
         schedules = OrganizationSpecialty.objects.all()
-        print(schedules)
-        appointments = Appointment.objects.all()
-        print(appointments)
+        for schedule in schedules:
+            print(schedule)
+
+        dts = [dt.strftime('%Y-%m-%d T%H:%M Z') for dt in datetime_range(
+            datetime(2016, 9, 1, 7),
+                              datetime(2016, 9, 1, 9 + 12),
+                              timedelta(minutes=15))]
+
+        print(dts)
+        #print(schedules)
+        #appointments = Appointment.objects.all()
+        #print(appointments)

@@ -63,5 +63,6 @@ class OrganizationSpecialty(models.Model):
         ]
 
     def __str__(self):
-        return (f'<Организация {self.organization} + Специальность '
-                f'{self.specialty}>')
+        return (f'{self.organization} + {self.specialty} ('
+                f'День {self.day_of_the_week} - {self.from_hour}'
+                f'-{self.to_hour})')
