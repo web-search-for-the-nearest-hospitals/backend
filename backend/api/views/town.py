@@ -4,7 +4,7 @@ from drf_yasg.utils import swagger_auto_schema
 from organizations.models import Town
 from ..mixins import RetrieveListViewSet, NoPaginationMixin
 from ..schemas import TOWN_SCHEMAS
-from ..serializers import TownSerializer
+from ..serializers import TownRetrieveSerializer, TownListSerializer
 
 
 @method_decorator(
@@ -27,5 +27,17 @@ class TownViewSet(NoPaginationMixin,
                   RetrieveListViewSet):
     """Вью-сет для города."""
 
-    queryset = Town.objects.prefetch_related('districts').all()
-    serializer_class = TownSerializer
+    def get_queryset(self):
+        """Оптимизируем походы в базу данных."""
+
+        if self.action == 'retrieve':
+            return Town.objects.prefetch_related('districts').all()
+        return Town.objects.only('id', 'name').all()
+
+    def get_serializer_class(self):
+        """Определяем какой сериализатор использовать в зависимости от
+        метода."""
+
+        if self.action == 'retrieve':
+            return TownRetrieveSerializer
+        return TownListSerializer
