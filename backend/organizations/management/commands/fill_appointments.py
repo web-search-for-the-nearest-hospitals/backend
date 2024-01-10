@@ -39,7 +39,6 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         days = options.get('N')
         duration = options.get('D')
-        appointments = []
         start_date = dt.date.today() + dt.timedelta(days=1)
         x_dates = [start_date + dt.timedelta(days=i) for i in range(days)]
 
@@ -59,31 +58,25 @@ class Command(BaseCommand):
                          named=True)
         )
 
+        appointments = []
+
         for schedule in schedules:
-
             for x_date in x_dates:
-
                 num_day = x_date.weekday() + 1
+
                 if num_day == schedule.day_of_the_week:
                     from_hour = schedule.from_hour
 
                     while from_hour < schedule.to_hour:
-                        datetime_start = dt.datetime.combine(
-                            x_date, from_hour)
-                        datetime_start = timezone.make_aware(
-                            datetime_start,
-                            timezone=timezone.get_current_timezone())
+                        dt_start = dt.datetime.combine(x_date, from_hour)
                         appointments.append(
                             Appointment(
-                                datetime_start=datetime_start,
+                                datetime_start=timezone.make_aware(dt_start),
                                 organization_id=schedule.organization,
-                                specialty_id=schedule.specialty,
-                            )
+                                specialty_id=schedule.specialty)
                         )
-                        temp_date_time = dt.datetime.combine(
-                            start_date,
-                            from_hour)
-                        temp_date_time += dt.timedelta(minutes=duration)
-                        from_hour = temp_date_time.time()
+                        temp_dt = dt.datetime.combine(start_date, from_hour)
+                        temp_dt += dt.timedelta(minutes=duration)
+                        from_hour = temp_dt.time()
 
         Appointment.objects.bulk_create(appointments)
