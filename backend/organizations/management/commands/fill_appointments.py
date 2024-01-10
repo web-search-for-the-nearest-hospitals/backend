@@ -1,17 +1,9 @@
+import datetime as dt
+
 from django.core.management.base import BaseCommand
+from django.utils import timezone
 
 from organizations.models import Appointment, OrganizationSpecialty
-
-from datetime import datetime, timedelta
-
-
-def datetime_range(start, end, delta):
-    current = start
-    while current < end:
-        yield current
-        current += delta
-
-
 
 
 class Command(BaseCommand):
@@ -25,14 +17,15 @@ class Command(BaseCommand):
     def add_arguments(self, parser):
         parser.add_argument('-n', '--num-days',
                             type=int,
-                            choices=range(1, 16),
-                            metavar="[1-15]",
-                            default=15,
+                            choices=range(1, 9),
+                            metavar="[1-8]",
+                            default=8,
                             dest='N',
                             help=('Количество дней вперед от текущей даты,'
                                   'на которые нужно сформировать талоны.'
-                                  ' (по умолчанию 15)')
+                                  ' (по умолчанию 8)')
                             )
+
         parser.add_argument('-d', '--duration',
                             type=int,
                             choices=range(12, 61),
@@ -46,18 +39,51 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         days = options.get('N')
         duration = options.get('D')
-        # Appointments,
         appointments = []
-        schedules = OrganizationSpecialty.objects.all()
+        start_date = dt.date.today() + dt.timedelta(days=1)
+        x_dates = [start_date + dt.timedelta(days=i) for i in range(days)]
+
+        schedules = (
+            OrganizationSpecialty
+            .objects
+            .only('day_of_the_week',
+                  'from_hour',
+                  'to_hour',
+                  'organization',
+                  'specialty')
+            .values_list('day_of_the_week',
+                         'from_hour',
+                         'to_hour',
+                         'organization',
+                         'specialty',
+                         named=True)
+        )
+
         for schedule in schedules:
-            print(schedule)
 
-        dts = [dt.strftime('%Y-%m-%d T%H:%M Z') for dt in datetime_range(
-            datetime(2016, 9, 1, 7),
-                              datetime(2016, 9, 1, 9 + 12),
-                              timedelta(minutes=15))]
+            for x_date in x_dates:
 
-        print(dts)
-        #print(schedules)
-        #appointments = Appointment.objects.all()
-        #print(appointments)
+                num_day = x_date.weekday() + 1
+                if num_day == schedule.day_of_the_week:
+                    from_hour = schedule.from_hour
+
+                    while from_hour < schedule.to_hour:
+                        datetime_start = dt.datetime.combine(
+                            x_date, from_hour)
+                        datetime_start = timezone.make_aware(
+                            datetime_start,
+                            timezone=timezone.get_current_timezone())
+                        appointments.append(
+                            Appointment(
+                                datetime_start=datetime_start,
+                                organization_id=schedule.organization,
+                                specialty_id=schedule.specialty,
+                            )
+                        )
+                        temp_date_time = dt.datetime.combine(
+                            start_date,
+                            from_hour)
+                        temp_date_time += dt.timedelta(minutes=duration)
+                        from_hour = temp_date_time.time()
+
+        Appointment.objects.bulk_create(appointments)

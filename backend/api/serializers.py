@@ -145,14 +145,12 @@ class OrganizationListSerializer(serializers.ModelSerializer):
     town = serializers.SlugRelatedField(
         slug_field='name',
         help_text='Город расположения организации',
-        read_only=True
-    )
+        read_only=True)
 
     district = serializers.SlugRelatedField(
         slug_field='name',
         help_text='Район расположения организации',
-        read_only=True
-    )
+        read_only=True)
 
     business_hours = OrgBusinessHourReadSerializer(
         many=True,
@@ -189,14 +187,12 @@ class OrganizationCreateUpdateSerializer(serializers.ModelSerializer):
     town = serializers.SlugRelatedField(
         queryset=Town.objects.all(),
         slug_field='name',
-        help_text='Город расположения организации'
-    )
+        help_text='Город расположения организации')
 
     district = serializers.SlugRelatedField(
         queryset=District.objects.all(),
         slug_field='name',
-        help_text='Район расположения организации'
-    )
+        help_text='Район расположения организации')
 
     business_hours = OrgBusinessHourCreateUpdateSerializer(
         many=True,
@@ -288,7 +284,8 @@ class AppointmentParamSerializer(serializers.Serializer):
 
     spec_code = serializers.CharField(
         required=True,
-        help_text='Код специальности врача для приема')
+        help_text='Код специальности врача для приема',
+        validators=[RegexValidator(regex=r'3[123]-08-\d\d')])
 
     which_date = serializers.DateField(
         required=True,
@@ -298,6 +295,9 @@ class AppointmentParamSerializer(serializers.Serializer):
         if datetime.date.today() > value:
             raise serializers.ValidationError(
                 "Дата записи не может быть позднее сегодняшней.")
+        if datetime.date.today() + datetime.timedelta(days=15) < value:
+            raise serializers.ValidationError(
+                "Записи не формируются более 15-ти дней вперед.")
         return value
 
 
