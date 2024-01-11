@@ -1,12 +1,14 @@
 import datetime
 import http
 
+from django.db.models import Prefetch
 from django.utils.decorators import method_decorator
 from django_filters.rest_framework import DjangoFilterBackend
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework import viewsets, permissions, decorators, response
 
-from organizations.models import Appointment, Organization
+from organizations.models import (Appointment, Organization,
+                                  OrganizationSpecialty)
 from ..filters import SearchFilterWithCustomDescription, OrgFilter
 from ..mixins import NoPaginationMixin
 from ..paginators import CustomNumberPagination
@@ -66,19 +68,28 @@ class OrganizationViewSet(viewsets.ModelViewSet):
         """Оптимизируем походы в базу данных."""
 
         if self.action in self.ACTIONS_WITH_ONE_INSTANCE:
+            prefetch = Prefetch(
+                'specialties',
+                queryset=(
+                    OrganizationSpecialty
+                    .objects
+                    .distinct('specialty')
+                    .all()))
             return (
                 Organization
                 .objects
-                .prefetch_related('specialties', 'business_hours')
-                .all()
-            )
+                .prefetch_related(prefetch)
+                .prefetch_related('business_hours')
+                .only('short_name', 'factual_address', 'site',
+                      'about', 'phone', 'is_full_time')
+                .all())
+
         return (
             Organization
             .objects
             .prefetch_related('business_hours')
             .select_related('town', 'district')
-            .all()
-        )
+            .all())
 
     def filter_queryset(self, queryset):
         """Убираем фильтрацию с действий, работающих с одной сущностью."""
