@@ -34,6 +34,8 @@ class OrganizationSpecialtyAdminModel(admin.ModelAdmin):
 
     list_display = ('organization', 'specialty',
                     'day_of_the_week', 'from_hour', 'to_hour')
+    ordering = ['organization', 'day_of_the_week', 'from_hour']
+    list_filter = ('day_of_the_week',)
 
 
 @admin.register(Town)
