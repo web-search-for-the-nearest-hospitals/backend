@@ -73,33 +73,3 @@
     town: 2
     longitude: 39.796059
     latitude: 57.689313
-- model: organizations.organization
-  pk: 1
-  fields:
-    short_name: Детская городская больница, детское отделение № 6
-    factual_address: улица Радищева, 6
-    date_added: 2023-12-25
-    longitude: 36.293222
-    latitude: 54.547449
-    site: detstvo-kaluga-new.ru
-    phone: +7 (4842) 55-43-78
-    is_gov: true
-    is_full_time: false
-    about:
-    town: 1
-    district: 3
-- model: organizations.organization
-  pk: 2
-  fields:
-    short_name: Клиника Здоровья
-    factual_address: ул. Телевизионная д.31
-    date_added: 2023-12-25
-    longitude: 36.262419
-    latitude: 54.526178
-    site: zdorovie-kaluga.ru
-    phone: +7 (4842) 55-15-15
-    is_gov: false
-    is_full_time: false
-    about: Здесь всегда чисто, уютно, никаких очередей и суеты. Калужане все чаще рекомендуют обращаться за медицинской помощью именно к врачам этой клиники.
-    town: 1
-    district: 2
