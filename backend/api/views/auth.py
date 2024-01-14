@@ -27,8 +27,6 @@ class SignUp(APIView):
     def post(self, request):
         serializer = SignUpSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        # username = serializer.data.get('username')
-        email = serializer.data.get('email')
         user, _ = User.objects.get_or_create(
             **serializer.validated_data
         )
@@ -61,10 +59,13 @@ class LoginView(APIView):
                     samesite=settings.SIMPLE_JWT['AUTH_COOKIE_SAMESITE'],
                 )
                 csrf.get_token(request)
-                response.data = {"Success": "Аутентификация пройдена", "data": data}
+                response.data = {
+                    "Success": "Аутентификация пройдена", "data": data
+                }
 
                 return response
-            else:
-                return Response({"No active": "Аккаунт неактивен!"}, status=status.HTTP_404_NOT_FOUND)
-        else:
-            return Response({"Invalid": "Неверное имя пользователя или пароль!"}, status=status.HTTP_404_NOT_FOUND)
+            return Response({"No active": "Аккаунт неактивен!"},
+                            status=status.HTTP_404_NOT_FOUND)
+        return Response({
+            "Invalid": "Неверное имя пользователя или пароль!"
+        }, status=status.HTTP_404_NOT_FOUND)
