@@ -27,8 +27,9 @@ class OrgFilter(django_filters.FilterSet):
 
     specialty = django_filters.CharFilter(
         lookup_expr="exact",
-        field_name='specialties__specialty__skill',
-        label='Фильтр по специальности врача'
+        field_name='specialties__specialty_id',
+        label='Фильтр по коду специальности врача',
+        distinct=True
     )
 
     district = django_filters.CharFilter(
