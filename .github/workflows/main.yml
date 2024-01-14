@@ -81,6 +81,9 @@ jobs:
             echo BACKEND_HOSTS=${{ secrets.BACKEND_HOSTS }} >> .env
             echo CSRF_TRUSTED_ORIGINS=${{ secrets.CSRF_TRUSTED_ORIGINS }} >> .env
             echo USE_X_FORWARDED_HOST=${{ secrets.USE_X_FORWARDED_HOST }} >> .env
+            echo VITE_NODE_ENV=${{ secrets.VITE_NODE_ENV }} >> .env
+            echo VITE_YAMAP_API_KEY=${{ secrets.VITE_YAMAP_API_KEY }} >> .env
+            echo VITE_BACK_URL=${{ secrets.VITE_BACK_URL }} >> .env
             sudo docker compose -p infra up -d --build
             sudo docker compose -p infra exec backend python manage.py migrate
 
