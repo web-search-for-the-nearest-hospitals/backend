@@ -11,6 +11,7 @@ from organizations.models import (Appointment, District,
                                   Organization, OrganizationSpecialty,
                                   OrganizationBusinessHour,
                                   Specialty, Town)
+from user.models import User
 
 
 class SpecialtySerializer(serializers.ModelSerializer):
@@ -383,3 +384,28 @@ class AppointmentCreateSerializer(serializers.Serializer):
         max_length=254,
         required=True,
         help_text='Электронная почта пациента')
+
+
+class SignUpSerializer(serializers.Serializer):
+    """Сериализатор регистрации нового пользователя."""
+    email = serializers.EmailField(
+        max_length=254,
+        required=True,
+    )
+    password = serializers.CharField(
+        required=True,
+    )
+
+    def validate(self, data):
+        email = data.get('email')
+        nonunique_email = User.objects.filter(email=email)
+        if nonunique_email:
+            raise serializers.ValidationError(
+                'Пользователь с такой почтой уже существует!'
+            )
+        return data
+
+
+class TokenSerializer(serializers.Serializer):
+    email = serializers.EmailField(required=True)
+    password = serializers.CharField(required=True)
