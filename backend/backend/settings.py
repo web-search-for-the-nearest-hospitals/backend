@@ -15,7 +15,7 @@ CSRF_TRUSTED_ORIGINS = os.getenv('CSRF_TRUSTED_ORIGINS',
 CORS_ORIGIN_ALLOW_ALL = True
 CORS_URLS_REGEX = r'^/api/.*$'
 
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = os.getenv('BACKEND_HOSTS', '*').split()
 
