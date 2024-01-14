@@ -288,3 +288,68 @@
     day: 5
     from_hour: "07:30:00"
     to_hour: "19:00:00"
+- model: organizations.organization
+  pk: 6
+  fields:
+    uuid: 3dad521a-89e4-486a-834f-7dfd9d3821f1
+    short_name: СИТИЛАБ
+    factual_address: г. Калуга, ул. Гагарина, д. 11
+    date_added: 1970-01-01 00:00:00
+    longitude: 36.235892
+    latitude: 54.512241
+    site: https://citilab.ru/kaluga/medcentres/1255/
+    phone: +7 (4842) 33-31-78
+    is_gov: false
+    is_full_time: false
+    about:
+    town: 1
+    district: 1
+- model: organizations.organizationbusinesshour
+  pk: 31
+  fields:
+    organization: 6
+    day: 1
+    from_hour: "07:30:00"
+    to_hour: "19:00:00"
+- model: organizations.organizationbusinesshour
+  pk: 32
+  fields:
+    organization: 6
+    day: 2
+    from_hour: "07:30:00"
+    to_hour: "19:00:00"
+- model: organizations.organizationbusinesshour
+  pk: 33
+  fields:
+    organization: 6
+    day: 3
+    from_hour: "07:30:00"
+    to_hour: "19:00:00"
+- model: organizations.organizationbusinesshour
+  pk: 34
+  fields:
+    organization: 6
+    day: 4
+    from_hour: "07:30:00"
+    to_hour: "19:00:00"
+- model: organizations.organizationbusinesshour
+  pk: 35
+  fields:
+    organization: 6
+    day: 5
+    from_hour: "07:30:00"
+    to_hour: "19:00:00"
+- model: organizations.organizationbusinesshour
+  pk: 36
+  fields:
+    organization: 6
+    day: 6
+    from_hour: "08:00:00"
+    to_hour: "15:30:00"
+- model: organizations.organizationbusinesshour
+  pk: 37
+  fields:
+    organization: 6
+    day: 7
+    from_hour: "08:00:00"
+    to_hour: "15:30:00"
