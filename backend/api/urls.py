@@ -3,7 +3,7 @@ from rest_framework.routers import DefaultRouter
 
 from .views import (AppointmentViewSet, OrganizationViewSet,
                     SpecialtyViewSet, TownViewSet, )
-from .views.auth import SignUp, LoginView
+from .views import (SignUp, LoginView)
 
 app_name = 'api'
 router = DefaultRouter()
