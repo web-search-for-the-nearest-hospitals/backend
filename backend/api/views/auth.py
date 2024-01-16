@@ -1,12 +1,13 @@
 from rest_framework import status
 from rest_framework.generics import get_object_or_404
-from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework.permissions import AllowAny
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.middleware import csrf
+from django.contrib.auth import authenticate
 
-from backend import settings
+from django.conf import settings
 from ..serializers import SignUpSerializer, TokenSerializer
 from user.models import User
 
@@ -32,7 +33,7 @@ class SignUp(APIView):
         )
         return Response(
             serializer.data,
-            status=status.HTTP_200_OK
+            status=status.HTTP_201_CREATED
         )
 
 
@@ -42,12 +43,10 @@ class LoginView(APIView):
         serializer.is_valid(raise_exception=True)
         data = request.data
         response = Response()
-        email = data.get('email', None)
-        password = data.get('password', None)
-        user = get_object_or_404(
-            User, email=email, password=password
-        )
-        if user is not None:
+        email = data.get('email')
+        password = data.get('password')
+        user = authenticate(email=email, password=password)
+        if user:
             if user.is_active:
                 data = get_tokens_for_user(user)
                 response.set_cookie(
@@ -65,7 +64,7 @@ class LoginView(APIView):
 
                 return response
             return Response({"No active": "Аккаунт неактивен!"},
-                            status=status.HTTP_404_NOT_FOUND)
+                            status=status.HTTP_400_BAD_REQUEST)
         return Response({
             "Invalid": "Неверное имя пользователя или пароль!"
-        }, status=status.HTTP_404_NOT_FOUND)
+        }, status=status.HTTP_400_BAD_REQUEST)
