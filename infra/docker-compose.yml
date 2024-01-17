@@ -1,0 +1,49 @@
+version: '3.8'
+services:
+  postgres:
+    image: postgres:13.0-alpine
+    volumes:
+      - postgres_dt:/var/lib/postgresql/data/
+    environment:
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    env_file:
+      - ./.env
+
+  backend:
+    image: hospitals/backend:latest
+    restart: always
+    volumes:
+      - static_value:/app/static/
+      - media_value:/app/media/
+    depends_on:
+      - postgres
+    env_file:
+      - ./.env
+
+  frontend:
+    image: hospitals/frontend:v1.3
+    volumes:
+      - static_front:/app/dist/
+    depends_on:
+      - backend
+
+  nginx:
+    image: nginx:1.21.3-alpine
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
+      - static_value:/var/html/static/
+      - media_value:/var/html/media/
+      - static_front:/usr/share/nginx/html/
+    depends_on:
+      - backend
+      - frontend
+
+volumes:
+  postgres_dt:
+  static_value:
+  media_value:
+  static_front:

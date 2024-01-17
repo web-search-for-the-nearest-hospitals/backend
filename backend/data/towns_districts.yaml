@@ -1,0 +1,75 @@
+- model: organizations.town
+  pk: 1
+  fields:
+    name: Калуга
+    longitude: 36.26134
+    latitude: 54.51367
+- model: organizations.town
+  pk: 2
+  fields:
+    name: Ярославль
+    longitude: 39.89381
+    latitude: 57.62655
+- model: organizations.district
+  pk: 1
+  fields:
+    name: Ленинский
+    town: 1
+    longitude: 36.231193
+    latitude: 54.503527
+- model: organizations.district
+  pk: 2
+  fields:
+    name: Московский
+    town: 1
+    longitude: 36.243851
+    latitude: 54.559245
+- model: organizations.district
+  pk: 3
+  fields:
+    name: Октябрьский
+    town: 1
+    longitude: 36.318941
+    latitude: 54.545893
+- model: organizations.district
+  pk: 4
+  fields:
+    name: Куровской
+    town: 1
+    longitude: 36.019577
+    latitude: 54.530666
+- model: organizations.district
+  pk: 5
+  fields:
+    name: Красноперекопский
+    town: 2
+    longitude: 39.821903
+    latitude: 57.576926
+- model: organizations.district
+  pk: 6
+  fields:
+    name: Фрунзенский
+    town: 2
+    longitude: 39.915472
+    latitude: 57.569281
+- model: organizations.district
+  pk: 7
+  fields:
+    name: Ленинский
+    town: 2
+    longitude: 39.859201
+    latitude: 57.637217
+- model: organizations.district
+  pk: 8
+  fields:
+    name: Заволжский
+    town: 2
+    longitude: 39.902446
+    latitude: 57.664095
+- model: organizations.district
+  pk: 9
+  fields:
+    name: Дзержинский
+    town: 2
+    longitude: 39.796059
+    latitude: 57.689313

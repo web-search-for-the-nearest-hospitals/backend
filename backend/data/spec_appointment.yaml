@@ -1,0 +1,272 @@
+- model: organizations.organizationspecialty
+  pk: 1
+  fields:
+    organization: 2
+    specialty: 31-08-26
+    day_of_the_week: 3
+    from_hour: "16:00:00"
+    to_hour: "18:00:00"
+- model: organizations.organizationspecialty
+  pk: 2
+  fields:
+    organization: 2
+    specialty: 31-08-26
+    day_of_the_week: 6
+    from_hour: "09:00:00"
+    to_hour: "15:00:00"
+- model: organizations.organizationspecialty
+  pk: 3
+  fields:
+    organization: 2
+    specialty: 31-08-32
+    day_of_the_week: 5
+    from_hour: "14:30:00"
+    to_hour: "18:30:00"
+- model: organizations.organizationspecialty
+  pk: 4
+  fields:
+    organization: 2
+    specialty: 31-08-42
+    day_of_the_week: 1
+    from_hour: "08:00:00"
+    to_hour: "14:00:00"
+- model: organizations.organizationspecialty
+  pk: 5
+  fields:
+    organization: 2
+    specialty: 31-08-42
+    day_of_the_week: 2
+    from_hour: "08:00:00"
+    to_hour: "14:00:00"
+- model: organizations.organizationspecialty
+  pk: 6
+  fields:
+    organization: 2
+    specialty: 31-08-42
+    day_of_the_week: 3
+    from_hour: "14:00:00"
+    to_hour: "20:00:00"
+- model: organizations.organizationspecialty
+  pk: 7
+  fields:
+    organization: 2
+    specialty: 31-08-42
+    day_of_the_week: 4
+    from_hour: "08:00:00"
+    to_hour: "14:00:00"
+- model: organizations.organizationspecialty
+  pk: 8
+  fields:
+    organization: 2
+    specialty: 31-08-42
+    day_of_the_week: 5
+    from_hour: "08:00:00"
+    to_hour: "14:00:00"
+- model: organizations.organizationspecialty
+  pk: 9
+  fields:
+    organization: 2
+    specialty: 31-08-42
+    day_of_the_week: 6
+    from_hour: "09:00:00"
+    to_hour: "15:00:00"
+- model: organizations.organizationspecialty
+  pk: 10
+  fields:
+    organization: 2
+    specialty: 31-08-43
+    day_of_the_week: 1
+    from_hour: "09:30:00"
+    to_hour: "16:30:00"
+- model: organizations.organizationspecialty
+  pk: 11
+  fields:
+    organization: 2
+    specialty: 31-08-43
+    day_of_the_week: 2
+    from_hour: "09:30:00"
+    to_hour: "15:30:00"
+- model: organizations.organizationspecialty
+  pk: 12
+  fields:
+    organization: 2
+    specialty: 31-08-43
+    day_of_the_week: 3
+    from_hour: "09:30:00"
+    to_hour: "16:30:00"
+- model: organizations.organizationspecialty
+  pk: 13
+  fields:
+    organization: 2
+    specialty: 31-08-43
+    day_of_the_week: 4
+    from_hour: "09:30:00"
+    to_hour: "15:30:00"
+- model: organizations.organizationspecialty
+  pk: 14
+  fields:
+    organization: 2
+    specialty: 31-08-43
+    day_of_the_week: 5
+    from_hour: "09:30:00"
+    to_hour: "16:30:00"
+- model: organizations.organizationspecialty
+  pk: 15
+  fields:
+    organization: 2
+    specialty: 31-08-45
+    day_of_the_week: 1
+    from_hour: "14:30:00"
+    to_hour: "16:30:00"
+- model: organizations.organizationspecialty
+  pk: 16
+  fields:
+    organization: 2
+    specialty: 31-08-68
+    day_of_the_week: 1
+    from_hour: "17:30:00"
+    to_hour: "19:00:00"
+- model: organizations.organizationspecialty
+  pk: 17
+  fields:
+    organization: 2
+    specialty: 31-08-68
+    day_of_the_week: 4
+    from_hour: "17:30:00"
+    to_hour: "19:00:00"
+- model: organizations.organizationspecialty
+  pk: 18
+  fields:
+    organization: 2
+    specialty: 31-08-66
+    day_of_the_week: 2
+    from_hour: "16:30:00"
+    to_hour: "19:00:00"
+- model: organizations.organizationspecialty
+  pk: 19
+  fields:
+    organization: 2
+    specialty: 31-08-66
+    day_of_the_week: 4
+    from_hour: "16:30:00"
+    to_hour: "19:00:00"
+- model: organizations.organizationspecialty
+  pk: 20
+  fields:
+    organization: 6
+    specialty: 31-08-36
+    day_of_the_week: 1
+    from_hour: "16:30:00"
+    to_hour: "19:00:00"
+- model: organizations.organizationspecialty
+  pk: 21
+  fields:
+    organization: 6
+    specialty: 31-08-36
+    day_of_the_week: 3
+    from_hour: "16:30:00"
+    to_hour: "19:00:00"
+- model: organizations.organizationspecialty
+  pk: 22
+  fields:
+    organization: 6
+    specialty: 31-08-36
+    day_of_the_week: 4
+    from_hour: "16:30:00"
+    to_hour: "19:00:00"
+- model: organizations.organizationspecialty
+  pk: 23
+  fields:
+    organization: 6
+    specialty: 31-08-36
+    day_of_the_week: 5
+    from_hour: "16:30:00"
+    to_hour: "19:00:00"
+- model: organizations.organizationspecialty
+  pk: 24
+  fields:
+    organization: 6
+    specialty: 31-08-49
+    day_of_the_week: 1
+    from_hour: "16:30:00"
+    to_hour: "19:00:00"
+- model: organizations.organizationspecialty
+  pk: 25
+  fields:
+    organization: 6
+    specialty: 31-08-49
+    day_of_the_week: 3
+    from_hour: "16:30:00"
+    to_hour: "19:00:00"
+- model: organizations.organizationspecialty
+  pk: 26
+  fields:
+    organization: 6
+    specialty: 31-08-49
+    day_of_the_week: 4
+    from_hour: "16:30:00"
+    to_hour: "19:00:00"
+- model: organizations.organizationspecialty
+  pk: 27
+  fields:
+    organization: 6
+    specialty: 31-08-49
+    day_of_the_week: 5
+    from_hour: "16:30:00"
+    to_hour: "19:00:00"
+- model: organizations.organizationspecialty
+  pk: 28
+  fields:
+    organization: 6
+    specialty: 31-08-13
+    day_of_the_week: 4
+    from_hour: "15:30:00"
+    to_hour: "19:00:00"
+- model: organizations.organizationspecialty
+  pk: 29
+  fields:
+    organization: 6
+    specialty: 31-08-53
+    day_of_the_week: 1
+    from_hour: "18:00:00"
+    to_hour: "19:00:00"
+- model: organizations.organizationspecialty
+  pk: 30
+  fields:
+    organization: 6
+    specialty: 31-08-53
+    day_of_the_week: 3
+    from_hour: "18:00:00"
+    to_hour: "19:00:00"
+- model: organizations.organizationspecialty
+  pk: 31
+  fields:
+    organization: 6
+    specialty: 31-08-53
+    day_of_the_week: 5
+    from_hour: "18:00:00"
+    to_hour: "19:00:00"
+- model: organizations.organizationspecialty
+  pk: 32
+  fields:
+    organization: 6
+    specialty: 31-08-53
+    day_of_the_week: 6
+    from_hour: "10:00:00"
+    to_hour: "13:00:00"
+- model: organizations.organizationspecialty
+  pk: 33
+  fields:
+    organization: 6
+    specialty: 31-08-26
+    day_of_the_week: 1
+    from_hour: "09:00:00"
+    to_hour: "11:00:00"
+- model: organizations.organizationspecialty
+  pk: 34
+  fields:
+    organization: 6
+    specialty: 31-08-26
+    day_of_the_week: 3
+    from_hour: "16:30:00"
+    to_hour: "18:30:00"
