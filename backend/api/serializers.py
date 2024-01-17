@@ -5,12 +5,14 @@ from django.core.validators import RegexValidator
 from django.db import transaction
 from django.shortcuts import get_object_or_404
 from django.urls import reverse
+from django.contrib.auth.hashers import make_password
 from rest_framework import serializers, validators
 
 from organizations.models import (Appointment, District,
                                   Organization, OrganizationSpecialty,
                                   OrganizationBusinessHour,
                                   Specialty, Town)
+from user.models import User
 
 
 class SpecialtySerializer(serializers.ModelSerializer):
@@ -383,3 +385,34 @@ class AppointmentCreateSerializer(serializers.Serializer):
         max_length=254,
         required=True,
         help_text='Электронная почта пациента')
+
+
+class SignUpSerializer(serializers.Serializer):
+    """Сериализатор регистрации нового пользователя."""
+
+    regex_for_password = r'[a-zA-Z0-9]{8,}'
+    email = serializers.EmailField(
+        max_length=254,
+        required=True,
+    )
+    # пока заглушка в виде не менее 8 букв или цифр
+    password = serializers.RegexField(
+        regex_for_password,
+        required=True,
+    )
+
+    def validate(self, data):
+        email = data.get('email')
+        password = data.get('password')
+        hashed_password = make_password(password)
+        data['password'] = hashed_password
+        if User.objects.filter(email=email).exists():
+            raise serializers.ValidationError(
+                'Пользователь с такой почтой уже существует!'
+            )
+        return data
+
+
+class TokenSerializer(serializers.Serializer):
+    email = serializers.EmailField(required=True)
+    password = serializers.CharField(required=True)

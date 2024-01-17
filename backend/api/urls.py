@@ -2,7 +2,8 @@ from django.urls import include, path
 from rest_framework.routers import DefaultRouter
 
 from .views import (AppointmentViewSet, OrganizationViewSet,
-                    SpecialtyViewSet, TownViewSet)
+                    SpecialtyViewSet, TownViewSet, )
+from .views import (SignUp, LoginView)
 
 app_name = 'api'
 router = DefaultRouter()
@@ -15,4 +16,6 @@ router.register('appointments', AppointmentViewSet)
 
 urlpatterns = [
     path('', include(router.urls)),
+    path('auth/signup/', SignUp.as_view()),
+    path('login/', LoginView.as_view(), name="login"),
 ]
