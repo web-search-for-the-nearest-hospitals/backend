@@ -238,13 +238,16 @@ class OrganizationCreateUpdateSerializer(serializers.ModelSerializer):
         many=True,
         help_text='Рабочие часы организации')
 
+    owner = serializers.HiddenField(
+        default=serializers.CurrentUserDefault())
+
     class Meta:
         model = Organization
         lookup_field = 'uuid'
         fields = ('relative_addr', 'short_name', 'factual_address',
                   'longitude', 'latitude', 'site', 'is_gov', 'is_full_time',
                   'about', 'phone', 'town', 'district', 'business_hours',
-                  'specialties')
+                  'specialties', 'owner')
         validators = [
             validators.UniqueTogetherValidator(
                 queryset=Organization.objects.all(),
