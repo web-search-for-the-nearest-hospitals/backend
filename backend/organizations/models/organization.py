@@ -1,6 +1,7 @@
 import uuid
 
 from django.db import models
+from django.conf import settings
 
 from .district import District
 from .town import Town
@@ -53,43 +54,38 @@ class Organization(models.Model):
         max_length=100,
         null=True,
         blank=True,
-        help_text='Сайт организации'
-    )
+        help_text='Сайт организации')
 
     phone = models.CharField(
         'Номер телефона',
         max_length=18,
         null=True,
         blank=True,
-        help_text='Телефон организации'
-    )
+        help_text='Телефон организации')
 
     is_gov = models.BooleanField(
         'Государственная?',
         default=False,
-        help_text='Является ли организация государственной'
-    )
+        help_text='Является ли организация государственной')
 
     is_full_time = models.BooleanField(
         'Круглосуточная?',
         default=False,
-        help_text='Является ли организация круглосуточной'
-    )
+        help_text='Является ли организация круглосуточной')
 
     about = models.TextField(
         'Дополнительная информация',
         null=True,
         blank=True,
-        help_text='Дополнительная информация об организации'
-    )
+        help_text='Дополнительная информация об организации')
+
     town = models.ForeignKey(
         Town,
         on_delete=models.SET_NULL,
         verbose_name='Город организации',
         null=True,
         related_name='organizations',
-        help_text='Город организации'
-    )
+        help_text='Город организации')
 
     district = models.ForeignKey(
         District,
@@ -97,8 +93,15 @@ class Organization(models.Model):
         verbose_name='Район организации',
         null=True,
         related_name='organizations',
-        help_text='Район организации'
-    )
+        help_text='Район организации')
+
+    owner = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        verbose_name='Владелец',
+        related_name='orgs',
+        null=True, blank=False,
+        help_text='Пользователь, создавший организацию')
 
     class Meta:
         ordering = None

@@ -109,7 +109,7 @@ class OrganizationViewSet(viewsets.ModelViewSet):
         return OrganizationCreateUpdateSerializer
 
     def get_permissions(self):
-        """Временная заглушка, чтобы не баловались POST-методами."""
+        """Открываем доступ для POST, PATCH, DELETE-методов."""
 
         if self.action in ('create', 'update', 'destroy'):
             permission_classes = [permissions.IsAuthenticated]
@@ -121,8 +121,7 @@ class OrganizationViewSet(viewsets.ModelViewSet):
     filterset_class = OrgFilter
     search_fields = ('short_name',)
     pagination_class = CustomNumberPagination
-    # http_method_names = ['get', 'post', 'head', 'delete', 'patch']
-    http_method_names = ['get', 'head']
+    http_method_names = ['get', 'post', 'head', 'delete', 'patch']
     lookup_field = 'uuid'
 
     @swagger_auto_schema(
