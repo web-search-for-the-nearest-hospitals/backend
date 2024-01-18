@@ -12,6 +12,7 @@ from organizations.models import (Appointment, Organization,
 from ..filters import SearchFilterWithCustomDescription, OrgFilter
 from ..mixins import NoPaginationMixin
 from ..paginators import CustomNumberPagination
+from ..permissions import IsOwnerOrAdminOrReadOnly
 from ..schemas import ORGS_SCHEMAS
 from ..serializers import (AppointmentListSerializer,
                            OrganizationCreateUpdateSerializer,
@@ -108,21 +109,13 @@ class OrganizationViewSet(viewsets.ModelViewSet):
             return OrganizationListSerializer
         return OrganizationCreateUpdateSerializer
 
-    def get_permissions(self):
-        """Открываем доступ для POST, PATCH, DELETE-методов."""
-
-        if self.action in ('create', 'update', 'destroy'):
-            permission_classes = [permissions.IsAuthenticated]
-        else:
-            permission_classes = [permissions.AllowAny]
-        return [permission() for permission in permission_classes]
-
     filter_backends = [DjangoFilterBackend, SearchFilterWithCustomDescription]
     filterset_class = OrgFilter
     search_fields = ('short_name',)
     pagination_class = CustomNumberPagination
     http_method_names = ['get', 'post', 'head', 'delete', 'patch']
     lookup_field = 'uuid'
+    permission_classes = (IsOwnerOrAdminOrReadOnly,)
 
     @swagger_auto_schema(
         name="get_free_tickets",
