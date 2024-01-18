@@ -23,7 +23,7 @@ services:
       - ./.env
 
   frontend:
-    image: hospitals/frontend:v1.3
+    image: hospitals/frontend:latest
     volumes:
       - static_front:/app/dist/
     depends_on:
