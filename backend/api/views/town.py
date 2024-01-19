@@ -23,7 +23,7 @@ from ..serializers import TownRetrieveSerializer, TownListSerializer
         operation_summary=TOWN_SCHEMAS["retrieve"]["summary"],
         operation_description=TOWN_SCHEMAS["retrieve"]["description"],
         responses=TOWN_SCHEMAS["retrieve"]["responses"],
-    security=[])
+        security=[])
 )
 class TownViewSet(NoPaginationMixin,
                   RetrieveListViewSet):
