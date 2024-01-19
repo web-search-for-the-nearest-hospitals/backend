@@ -1,12 +1,12 @@
 import datetime
 import re
 
+from django.contrib.auth.hashers import make_password
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.validators import RegexValidator
 from django.db import transaction
 from django.shortcuts import get_object_or_404
 from django.urls import reverse
-from django.contrib.auth.hashers import make_password
 from rest_framework import serializers, validators
 
 from organizations.models import (Appointment, District,
@@ -116,8 +116,9 @@ class OrgBusinessHourReadSerializer(serializers.ModelSerializer):
 class OrgSpecialtyCreateUpdateSerializer(serializers.ModelSerializer):
     """Сериализатор специальностей организации для POST & PATCH - методов."""
 
-    code = serializers.CharField(source='specialty.code',
-                                 help_text='Специальность врача')
+    code = serializers.CharField(
+        source='specialty.code',
+        help_text='Код специальности врача')
 
     class Meta:
         model = OrganizationSpecialty
@@ -215,10 +216,25 @@ class OrganizationListSerializer(serializers.ModelSerializer):
                        kwargs={'uuid': obj.uuid})
 
 
+class DistrictField(serializers.CharField):
+    """Костылька для корректного отображения района.
+    (Почти велосипед к RelatedField, но зато есть валидация
+    с учетом значения поля <town>).
+    """
+
+    def to_representation(self, value):
+        if isinstance(value, District):
+            return value.name
+        return str(value)
+
+
 class OrganizationCreateUpdateSerializer(serializers.ModelSerializer):
     """Сериализатор организации для CREATE & UPDATE."""
 
-    specialties = OrgSpecialtyCreateUpdateSerializer(many=True, required=False)
+    specialties = OrgSpecialtyCreateUpdateSerializer(
+        many=True,
+        required=False,
+        help_text='Специальности врачей, работающих в организации')
 
     relative_addr = serializers.SerializerMethodField(
         label='relative_addr',
@@ -230,7 +246,7 @@ class OrganizationCreateUpdateSerializer(serializers.ModelSerializer):
         slug_field='name',
         help_text='Город расположения организации')
 
-    district = serializers.CharField(
+    district = DistrictField(
         required=True,
         help_text='Район расположения организации')
 
@@ -285,6 +301,9 @@ class OrganizationCreateUpdateSerializer(serializers.ModelSerializer):
     def validate(self, attrs):
 
         validated_data = super().validate(attrs)
+
+        print(type(validated_data.get('town')))
+
         district = validated_data.pop('district')
         town = validated_data.get('town')
 

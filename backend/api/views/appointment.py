@@ -19,7 +19,8 @@ from ..serializers import AppointmentCreateSerializer
         tags=APPOINT_SCHEMAS["update"]["tags"],
         operation_summary=APPOINT_SCHEMAS["update"]["summary"],
         operation_description=APPOINT_SCHEMAS["update"]["description"],
-        responses=APPOINT_SCHEMAS["update"]["responses"])
+        responses=APPOINT_SCHEMAS["update"]["responses"],
+        security=[])
 )
 class AppointmentViewSet(NoPaginationMixin,
                          UpdateViewSet):

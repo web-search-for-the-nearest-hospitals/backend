@@ -13,6 +13,7 @@ from ..serializers import SpecialtySerializer
         tags=SPEC_SCHEMAS["list"]["tags"],
         operation_summary=SPEC_SCHEMAS["list"]["summary"],
         operation_description=SPEC_SCHEMAS["list"]["description"],
+        security=[]
     )
 )
 class SpecialtyViewSet(NoPaginationMixin,
