@@ -301,9 +301,6 @@ class OrganizationCreateUpdateSerializer(serializers.ModelSerializer):
     def validate(self, attrs):
 
         validated_data = super().validate(attrs)
-
-        print(type(validated_data.get('town')))
-
         district = validated_data.pop('district')
         town = validated_data.get('town')
 
