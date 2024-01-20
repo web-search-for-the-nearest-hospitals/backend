@@ -5,6 +5,7 @@ from django.contrib.auth.hashers import make_password
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.validators import RegexValidator
 from django.db import transaction
+from django.http import Http404
 from django.shortcuts import get_object_or_404
 from django.urls import reverse
 from rest_framework import serializers, validators
@@ -14,6 +15,7 @@ from organizations.models import (Appointment, District,
                                   OrganizationBusinessHour,
                                   Specialty, Town)
 from user.models import User
+from .fields import DistrictField, SlugRelatedFieldWith404
 
 
 class SpecialtySerializer(serializers.ModelSerializer):
@@ -216,18 +218,6 @@ class OrganizationListSerializer(serializers.ModelSerializer):
                        kwargs={'uuid': obj.uuid})
 
 
-class DistrictField(serializers.CharField):
-    """Костылька для корректного отображения района.
-    (Почти велосипед к RelatedField, но зато есть валидация
-    с учетом значения поля <town>).
-    """
-
-    def to_representation(self, value):
-        if isinstance(value, District):
-            return value.name
-        return str(value)
-
-
 class OrganizationCreateUpdateSerializer(serializers.ModelSerializer):
     """Сериализатор организации для CREATE & UPDATE."""
 
@@ -241,7 +231,7 @@ class OrganizationCreateUpdateSerializer(serializers.ModelSerializer):
         help_text='Относительный адрес организации в сервисе',
         read_only=True)
 
-    town = serializers.SlugRelatedField(
+    town = SlugRelatedFieldWith404(
         queryset=Town.objects.only('id').all(),
         slug_field='name',
         help_text='Город расположения организации')
@@ -311,9 +301,9 @@ class OrganizationCreateUpdateSerializer(serializers.ModelSerializer):
                 .only('id')
                 .get(town=town, name=district)
             )
+
         except ObjectDoesNotExist:
-            raise serializers.ValidationError(
-                {"district": f"Объект с name={district} не существует."})
+            raise Http404
         return validated_data
 
     @staticmethod
