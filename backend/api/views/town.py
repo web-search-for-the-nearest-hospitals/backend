@@ -13,6 +13,7 @@ from ..serializers import TownRetrieveSerializer, TownListSerializer
         tags=TOWN_SCHEMAS["list"]["tags"],
         operation_summary=TOWN_SCHEMAS["list"]["summary"],
         operation_description=TOWN_SCHEMAS["list"]["description"],
+        security=[]
     )
 )
 @method_decorator(
@@ -21,7 +22,8 @@ from ..serializers import TownRetrieveSerializer, TownListSerializer
         tags=TOWN_SCHEMAS["retrieve"]["tags"],
         operation_summary=TOWN_SCHEMAS["retrieve"]["summary"],
         operation_description=TOWN_SCHEMAS["retrieve"]["description"],
-        responses=TOWN_SCHEMAS["retrieve"]["responses"])
+        responses=TOWN_SCHEMAS["retrieve"]["responses"],
+        security=[])
 )
 class TownViewSet(NoPaginationMixin,
                   RetrieveListViewSet):

@@ -1,11 +1,13 @@
 import datetime
 import re
 
+from django.contrib.auth.hashers import make_password
+from django.core.exceptions import ObjectDoesNotExist
 from django.core.validators import RegexValidator
 from django.db import transaction
+from django.http import Http404
 from django.shortcuts import get_object_or_404
 from django.urls import reverse
-from django.contrib.auth.hashers import make_password
 from rest_framework import serializers, validators
 
 from organizations.models import (Appointment, District,
@@ -13,6 +15,7 @@ from organizations.models import (Appointment, District,
                                   OrganizationBusinessHour,
                                   Specialty, Town)
 from user.models import User
+from .fields import DistrictField, SlugRelatedFieldWith404
 
 
 class SpecialtySerializer(serializers.ModelSerializer):
@@ -115,12 +118,13 @@ class OrgBusinessHourReadSerializer(serializers.ModelSerializer):
 class OrgSpecialtyCreateUpdateSerializer(serializers.ModelSerializer):
     """Сериализатор специальностей организации для POST & PATCH - методов."""
 
-    skill = serializers.CharField(source='specialty.skill',
-                                  help_text='Специальность врача')
+    code = serializers.CharField(
+        source='specialty.code',
+        help_text='Код специальности врача')
 
     class Meta:
         model = OrganizationSpecialty
-        fields = ('skill', 'day_of_the_week', 'from_hour', 'to_hour')
+        fields = ('code', 'day_of_the_week', 'from_hour', 'to_hour')
 
     def validate(self, attrs):
         if attrs['from_hour'] > attrs['to_hour']:
@@ -217,26 +221,31 @@ class OrganizationListSerializer(serializers.ModelSerializer):
 class OrganizationCreateUpdateSerializer(serializers.ModelSerializer):
     """Сериализатор организации для CREATE & UPDATE."""
 
-    specialties = OrgSpecialtyCreateUpdateSerializer(many=True, required=False)
+    specialties = OrgSpecialtyCreateUpdateSerializer(
+        many=True,
+        required=False,
+        help_text='Специальности врачей, работающих в организации')
 
     relative_addr = serializers.SerializerMethodField(
         label='relative_addr',
         help_text='Относительный адрес организации в сервисе',
         read_only=True)
 
-    town = serializers.SlugRelatedField(
-        queryset=Town.objects.all(),
+    town = SlugRelatedFieldWith404(
+        queryset=Town.objects.only('id').all(),
         slug_field='name',
         help_text='Город расположения организации')
 
-    district = serializers.SlugRelatedField(
-        queryset=District.objects.all(),
-        slug_field='name',
+    district = DistrictField(
+        required=True,
         help_text='Район расположения организации')
 
     business_hours = OrgBusinessHourCreateUpdateSerializer(
         many=True,
         help_text='Рабочие часы организации')
+
+    owner = serializers.HiddenField(
+        default=serializers.CurrentUserDefault())
 
     class Meta:
         model = Organization
@@ -244,7 +253,7 @@ class OrganizationCreateUpdateSerializer(serializers.ModelSerializer):
         fields = ('relative_addr', 'short_name', 'factual_address',
                   'longitude', 'latitude', 'site', 'is_gov', 'is_full_time',
                   'about', 'phone', 'town', 'district', 'business_hours',
-                  'specialties')
+                  'specialties', 'owner')
         validators = [
             validators.UniqueTogetherValidator(
                 queryset=Organization.objects.all(),
@@ -263,11 +272,11 @@ class OrganizationCreateUpdateSerializer(serializers.ModelSerializer):
 
         for specialty in specialties:
             spec_data = specialty['specialty']
-            skill = spec_data['skill']
+            code = spec_data['code']
             day_of_the_week = specialty['day_of_the_week']
             from_hour = specialty['from_hour']
             to_hour = specialty['to_hour']
-            current_specialty = get_object_or_404(Specialty, skill=skill)
+            current_specialty = get_object_or_404(Specialty, code=code)
             new_org_specialties.append(
                 OrganizationSpecialty(
                     organization=org,
@@ -278,6 +287,24 @@ class OrganizationCreateUpdateSerializer(serializers.ModelSerializer):
                 )
             )
         OrganizationSpecialty.objects.bulk_create(new_org_specialties)
+
+    def validate(self, attrs):
+
+        validated_data = super().validate(attrs)
+        district = validated_data.pop('district')
+        town = validated_data.get('town')
+
+        try:
+            validated_data['district'] = (
+                District
+                .objects
+                .only('id')
+                .get(town=town, name=district)
+            )
+
+        except ObjectDoesNotExist:
+            raise Http404
+        return validated_data
 
     @staticmethod
     def create_org_business_hours(business_hours: dict,

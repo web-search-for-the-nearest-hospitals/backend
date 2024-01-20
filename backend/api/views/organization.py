@@ -5,13 +5,14 @@ from django.db.models import Prefetch
 from django.utils.decorators import method_decorator
 from django_filters.rest_framework import DjangoFilterBackend
 from drf_yasg.utils import swagger_auto_schema
-from rest_framework import viewsets, permissions, decorators, response
+from rest_framework import viewsets, decorators, response
 
 from organizations.models import (Appointment, Organization,
                                   OrganizationSpecialty)
 from ..filters import SearchFilterWithCustomDescription, OrgFilter
 from ..mixins import NoPaginationMixin
 from ..paginators import CustomNumberPagination
+from ..permissions import IsOwnerOrAdminOrReadOnly
 from ..schemas import ORGS_SCHEMAS
 from ..serializers import (AppointmentListSerializer,
                            OrganizationCreateUpdateSerializer,
@@ -27,7 +28,8 @@ from ..serializers import (AppointmentListSerializer,
         operation_summary=ORGS_SCHEMAS["list"]["summary"],
         operation_description=ORGS_SCHEMAS["list"]["description"],
         pagination_class=CustomNumberPagination,
-        manual_parameters=ORGS_SCHEMAS["list"]["params"])
+        manual_parameters=ORGS_SCHEMAS["list"]["params"],
+        security=[])
 )
 @method_decorator(
     name="retrieve",
@@ -35,7 +37,8 @@ from ..serializers import (AppointmentListSerializer,
         tags=ORGS_SCHEMAS["retrieve"]["tags"],
         operation_summary=ORGS_SCHEMAS["retrieve"]["summary"],
         operation_description=ORGS_SCHEMAS["retrieve"]["description"],
-        responses=ORGS_SCHEMAS["retrieve"]["responses"])
+        responses=ORGS_SCHEMAS["retrieve"]["responses"],
+        security=[])
 )
 @method_decorator(
     name="create",
@@ -88,6 +91,7 @@ class OrganizationViewSet(viewsets.ModelViewSet):
             Organization
             .objects
             .prefetch_related('business_hours')
+            .prefetch_related('specialties')
             .select_related('town', 'district')
             .all())
 
@@ -108,22 +112,13 @@ class OrganizationViewSet(viewsets.ModelViewSet):
             return OrganizationListSerializer
         return OrganizationCreateUpdateSerializer
 
-    def get_permissions(self):
-        """Временная заглушка, чтобы не баловались POST-методами."""
-
-        if self.action in ('create', 'update', 'destroy'):
-            permission_classes = [permissions.IsAuthenticated]
-        else:
-            permission_classes = [permissions.AllowAny]
-        return [permission() for permission in permission_classes]
-
     filter_backends = [DjangoFilterBackend, SearchFilterWithCustomDescription]
     filterset_class = OrgFilter
     search_fields = ('short_name',)
     pagination_class = CustomNumberPagination
-    # http_method_names = ['get', 'post', 'head', 'delete', 'patch']
-    http_method_names = ['get', 'head']
+    http_method_names = ['get', 'post', 'head', 'delete', 'patch']
     lookup_field = 'uuid'
+    permission_classes = (IsOwnerOrAdminOrReadOnly,)
 
     @swagger_auto_schema(
         name="get_free_tickets",
@@ -133,6 +128,7 @@ class OrganizationViewSet(viewsets.ModelViewSet):
         pagination_class=NoPaginationMixin,
         responses={"200": AppointmentListSerializer},
         query_serializer=AppointmentParamSerializer,
+        security=[]
     )
     @decorators.action(detail=True,
                        methods=['GET'],
