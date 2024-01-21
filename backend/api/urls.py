@@ -1,4 +1,5 @@
 from django.urls import include, path
+from djoser.views import UserViewSet
 from rest_framework.routers import DefaultRouter
 
 from .views import (AppointmentViewSet, OrganizationViewSet,
@@ -18,4 +19,10 @@ urlpatterns = [
     path('', include(router.urls)),
     path('auth/signup/', SignUp.as_view()),
     path('login/', LoginView.as_view(), name="login"),
+    path(r'auth/users/reset_password_confirm/<uid>/<token>/',
+         UserViewSet.as_view({"post": "reset_password_confirm"})),
+    path('auth/', include('djoser.urls')),
 ]
+
+# 'auth/users/reset_password/'
+# эндпоинт джосера для ввода емейла для сброса пароля

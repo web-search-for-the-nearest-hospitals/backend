@@ -31,7 +31,6 @@ class SignUp(APIView):
             **serializer.validated_data
         )
         return Response(
-            serializer.data,
             status=status.HTTP_201_CREATED
         )
 
@@ -57,9 +56,9 @@ class LoginView(APIView):
                 samesite=settings.SIMPLE_JWT['AUTH_COOKIE_SAMESITE'],
             )
             csrf.get_token(request)
-            return Response(
-                {"Success": "Аутентификация пройдена", "data": data},
-                status=status.HTTP_200_OK)
+            response.data = {"Success": "Аутентификация пройдена",
+                             "data": data}
+            return response
         return Response({
             "Invalid": "Неверное имя пользователя или пароль!"
         }, status=status.HTTP_400_BAD_REQUEST)

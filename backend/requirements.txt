@@ -5,6 +5,7 @@ django-cors-headers==4.3.1
 django-filter==23.4
 djangorestframework==3.14.0
 djangorestframework-simplejwt==5.3.1
+djoser==2.2.2
 drf-yasg==1.21.7
 exceptiongroup==1.2.0
 gunicorn==21.2.0

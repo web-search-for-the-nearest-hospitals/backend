@@ -39,7 +39,8 @@ INSTALLED_APPS = [
     'organizations',
     'user',
     'api',
-    'drf_yasg'
+    'drf_yasg',
+    'djoser',
 ]
 
 MIDDLEWARE = [
@@ -110,6 +111,12 @@ STATIC_ROOT = BASE_DIR / STATIC_URL
 MEDIA_URL = 'media/'
 MEDIA_ROOT = BASE_DIR / MEDIA_URL
 
+# Эти настройки используются для отладки, пока нет настройки сервера отправки писем
+# Пользователь дёргает ручку /auth/users/reset_password/ ->>
+# в папку sent_email отправляется письмо, где содержится ссылка для сброса пароля
+EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'
+EMAIL_FILE_PATH = os.path.join(BASE_DIR, 'sent_emails')
+
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 SIMPLE_JWT = {
@@ -168,4 +175,15 @@ LOGGING = {
             'handlers': ['console'],
         }
     }
+}
+
+DJOSER = {
+    'PASSWORD_RESET_CONFIRM_URL': 'auth/users/reset_password_confirm/{uid}/{token}',
+    'PASSWORD_RESET_CONFIRM_RETYPE': True,
+    'USERNAME_RESET_CONFIRM_URL': '#/username/reset/confirm/{uid}/{token}',
+    'ACTIVATION_URL': '#/activate/{uid}/{token}',
+    'SEND_ACTIVATION_EMAIL': True,
+    'SERIALIZERS': {
+        'password_reset_confirm_retype': 'api.serializers.PasswordResetConfirmRetypeSerializer',
+    },
 }
