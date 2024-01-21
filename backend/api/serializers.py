@@ -294,6 +294,19 @@ class OrganizationCreateUpdateSerializer(serializers.ModelSerializer):
         district = validated_data.pop('district')
         town = validated_data.get('town')
 
+        is_full_time = validated_data.get('is_full_time')
+        business_hours = validated_data.get('business_hours')
+
+        if is_full_time and business_hours:
+            raise serializers.ValidationError(
+                'Организация либо круглосуточная, либо по графику'
+            )
+
+        if not is_full_time and not business_hours:
+            raise serializers.ValidationError(
+                'Нет информации о графике работы организации'
+            )
+
         try:
             validated_data['district'] = (
                 District
