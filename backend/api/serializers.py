@@ -340,7 +340,7 @@ class OrganizationCreateUpdateSerializer(serializers.ModelSerializer):
     def validate_phone(self, value):
         if not re.match(PHONE_NUMBER_REGEX, value):
             raise serializers.ValidationError(
-                f'Номер телефона не соответствует шаблону'
+                'Номер телефона не соответствует шаблону'
             )
 
     @staticmethod
