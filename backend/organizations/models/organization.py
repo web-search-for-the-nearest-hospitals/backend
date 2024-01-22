@@ -77,7 +77,8 @@ class Organization(models.Model):
         'Дополнительная информация',
         null=True,
         blank=True,
-        help_text='Дополнительная информация об организации')
+        help_text='Дополнительная информация об организации',
+        max_length=500)
 
     town = models.ForeignKey(
         Town,
