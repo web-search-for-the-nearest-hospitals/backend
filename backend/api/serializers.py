@@ -1,5 +1,4 @@
 import datetime
-import re
 
 from django.contrib.auth.hashers import make_password
 from django.core.exceptions import ObjectDoesNotExist
@@ -16,6 +15,7 @@ from organizations.models import (Appointment, District,
                                   Specialty, Town)
 from user.models import User
 from .fields import DistrictField, SlugRelatedFieldWith404
+from .utils import FIO_REGEX, PHONE_NUMBER_REGEX, haversine
 
 
 class SpecialtySerializer(serializers.ModelSerializer):
@@ -232,7 +232,7 @@ class OrganizationCreateUpdateSerializer(serializers.ModelSerializer):
         read_only=True)
 
     town = SlugRelatedFieldWith404(
-        queryset=Town.objects.only('id').all(),
+        queryset=Town.objects.all(),
         slug_field='name',
         help_text='Город расположения организации')
 
@@ -291,8 +291,38 @@ class OrganizationCreateUpdateSerializer(serializers.ModelSerializer):
     def validate(self, attrs):
 
         validated_data = super().validate(attrs)
+
         district = validated_data.pop('district')
         town = validated_data.get('town')
+
+        is_full_time = validated_data.get('is_full_time')
+        business_hours = validated_data.get('business_hours')
+
+        errors = dict()
+
+        if haversine(
+                town.longitude,
+                town.latitude,
+                validated_data.get('longitude'),
+                validated_data.get('latitude')
+        ) > Town.MAX_DIST:
+            errors['latitude & longitude'] = (f'Организация слишком далеко '
+                                              f'расположена от центра города'
+                                              f' (больше допустимых'
+                                              f' {Town.MAX_DIST} километров).')
+
+        if is_full_time and business_hours:
+            errors['is_full_time & business_hours'] = ('Организация либо '
+                                                       'круглосуточная, '
+                                                       'либо по графику')
+
+        if not is_full_time and not business_hours:
+            errors['is_full_time & business_hours'] = ('Нет информации о '
+                                                       'графике работы '
+                                                       'организации')
+
+        if errors:
+            raise serializers.ValidationError(errors)
 
         try:
             validated_data['district'] = (
@@ -389,22 +419,17 @@ class AppointmentListSerializer(serializers.ModelSerializer):
 class AppointmentCreateSerializer(serializers.Serializer):
     """Сериализатор записи к специальности врача организации."""
 
-    fio_pattern = re.compile(r'([А-ЯЁ][а-яё]+)\s([А-ЯЁ][а-яё]+)\s([А-ЯЁ]['
-                             r'а-яё]+)$')
-    phone_pattern = re.compile(r'^(\+7|7|8)?[\s\-]?\(?[489][0-9]{2}\)?[\s\-]?'
-                               r'[0-9]{3}[\s\-]?[0-9]{2}[\s\-]?[0-9]{2}$')
-
     fio = serializers.CharField(
         min_length=8,
         max_length=255,
         required=True,
-        validators=[RegexValidator(regex=fio_pattern)],
+        validators=[RegexValidator(regex=FIO_REGEX)],
         help_text='ФИО пациента'
     )
 
     phone = serializers.CharField(
         required=True,
-        validators=[RegexValidator(regex=phone_pattern)],
+        validators=[RegexValidator(regex=PHONE_NUMBER_REGEX)],
         help_text='Номер телефона пациента')
 
     email = serializers.EmailField(

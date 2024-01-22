@@ -58,7 +58,7 @@ class Organization(models.Model):
 
     phone = models.CharField(
         'Номер телефона',
-        max_length=18,
+        max_length=20,
         null=True,
         blank=True,
         help_text='Телефон организации')
@@ -77,7 +77,8 @@ class Organization(models.Model):
         'Дополнительная информация',
         null=True,
         blank=True,
-        help_text='Дополнительная информация об организации')
+        help_text='Дополнительная информация об организации',
+        max_length=500)
 
     town = models.ForeignKey(
         Town,

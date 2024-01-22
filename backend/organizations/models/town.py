@@ -4,6 +4,8 @@ from django.db import models
 class Town(models.Model):
     """Описание модели города."""
 
+    MAX_DIST = 25
+
     name = models.CharField(
         'Наименование города',
         help_text='Наименование города',
