@@ -21,8 +21,6 @@ urlpatterns = [
     path('login/', LoginView.as_view(), name="login"),
     path(r'auth/users/reset_password_confirm/<uid>/<token>/',
          UserViewSet.as_view({"post": "reset_password_confirm"})),
-    path('auth/', include('djoser.urls')),
+    path('auth/users/reset_password/',
+         UserViewSet.as_view({"post": "reset_password"})),
 ]
-
-# 'auth/users/reset_password/'
-# эндпоинт джосера для ввода емейла для сброса пароля

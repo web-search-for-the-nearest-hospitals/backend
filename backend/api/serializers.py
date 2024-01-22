@@ -449,6 +449,7 @@ class TokenSerializer(serializers.Serializer):
 
 
 class UidAndTokenSerializer(serializers.Serializer):
+    """Сериализатор проверки текущего пользователя."""
     uid = serializers.CharField(required=False)
     token = serializers.CharField(required=False)
 
@@ -476,7 +477,6 @@ class UidAndTokenSerializer(serializers.Serializer):
         uid = self.custom_validator().get('uid')
         try:
             uid = utils.decode_uid(uid)
-            print("UUUUID", uid)
             self.user = User.objects.get(pk=uid)
         except (User.DoesNotExist, ValueError, TypeError, OverflowError):
             key_error = "invalid_uid"
@@ -489,4 +489,7 @@ class UidAndTokenSerializer(serializers.Serializer):
 class PasswordResetConfirmRetypeSerializer(
         UidAndTokenSerializer,
         PasswordRetypeSerializer):
+    """PasswordRetypeSerializer взят из джосера,
+    UidAndTokenSerializer переопределен.
+    """
     pass

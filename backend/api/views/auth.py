@@ -1,3 +1,5 @@
+from django.contrib.auth.tokens import default_token_generator
+from djoser import utils
 from rest_framework import status
 from rest_framework.permissions import AllowAny
 from rest_framework.views import APIView
@@ -7,6 +9,8 @@ from django.middleware import csrf
 from django.contrib.auth import authenticate
 
 from django.conf import settings
+from templated_mail.mail import BaseEmailMessage
+
 from ..serializers import SignUpSerializer, TokenSerializer
 from user.models import User
 
@@ -62,3 +66,19 @@ class LoginView(APIView):
         return Response({
             "Invalid": "Неверное имя пользователя или пароль!"
         }, status=status.HTTP_400_BAD_REQUEST)
+
+
+class PasswordResetEmail(BaseEmailMessage):
+    """Переопределяем класс джосера для отправки письма."""
+    template_name = "password_reset.html"
+
+    def get_context_data(self):
+        from djoser.conf import settings
+        # PasswordResetEmail can be deleted
+        context = super().get_context_data()
+
+        user = context.get("user")
+        context["uid"] = utils.encode_uid(user.pk)
+        context["token"] = default_token_generator.make_token(user)
+        context["url"] = settings.PASSWORD_RESET_CONFIRM_URL.format(**context)
+        return context
