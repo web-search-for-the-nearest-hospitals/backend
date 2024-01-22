@@ -1,4 +1,5 @@
 import datetime
+import re
 
 from django.contrib.auth.hashers import make_password
 from django.core.exceptions import ObjectDoesNotExist
@@ -335,6 +336,12 @@ class OrganizationCreateUpdateSerializer(serializers.ModelSerializer):
         except ObjectDoesNotExist:
             raise Http404
         return validated_data
+
+    def validate_phone(self, value):
+        if not re.match(PHONE_NUMBER_REGEX, value):
+            raise serializers.ValidationError(
+                f'Номер телефона не соответствует шаблону'
+            )
 
     @staticmethod
     def create_org_business_hours(business_hours: dict,
