@@ -179,7 +179,7 @@ LOGGING = {
 }
 
 DJOSER = {
-    'PASSWORD_RESET_CONFIRM_URL': 'api/auth/users/reset_password_confirm/{uid}/{token}',
+    'PASSWORD_RESET_CONFIRM_URL': 'api/auth/users/reset_password_confirm/{uid}/{token}/',
     'PASSWORD_RESET_CONFIRM_RETYPE': True,
     'USERNAME_RESET_CONFIRM_URL': '#/username/reset/confirm/{uid}/{token}',
     'ACTIVATION_URL': '#/activate/{uid}/{token}',
