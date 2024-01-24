@@ -1,5 +1,7 @@
 from django.contrib.auth.tokens import default_token_generator
+from django.utils.decorators import method_decorator
 from djoser import utils
+from drf_yasg.utils import swagger_auto_schema
 from rest_framework import status
 from rest_framework.permissions import AllowAny
 from rest_framework.views import APIView
@@ -11,6 +13,7 @@ from django.contrib.auth import authenticate
 from django.conf import settings
 from templated_mail.mail import BaseEmailMessage
 
+from ..schemas import SIGNUP_SCHEMAS, LOGIN_SCHEMAS
 from ..serializers import SignUpSerializer, TokenSerializer
 from user.models import User
 
@@ -24,6 +27,14 @@ def get_tokens_for_user(user):
     }
 
 
+@method_decorator(
+    name="post",
+    decorator=swagger_auto_schema(
+        tags=SIGNUP_SCHEMAS["post"]["tags"],
+        operation_summary=SIGNUP_SCHEMAS["post"]["summary"],
+        operation_description=SIGNUP_SCHEMAS["post"]["description"],
+        responses=SIGNUP_SCHEMAS["post"]["responses"])
+)
 class SignUp(APIView):
     """Вью для регистрации нового пользователя"""
     permission_classes = (AllowAny,)
@@ -39,6 +50,14 @@ class SignUp(APIView):
         )
 
 
+@method_decorator(
+    name="post",
+    decorator=swagger_auto_schema(
+        tags=LOGIN_SCHEMAS["post"]["tags"],
+        operation_summary=LOGIN_SCHEMAS["post"]["summary"],
+        operation_description=LOGIN_SCHEMAS["post"]["description"],
+        responses=LOGIN_SCHEMAS["post"]["responses"])
+)
 class LoginView(APIView):
     """Вью для авторизации зарегистрированного пользователя"""
     def post(self, request, format=None):
