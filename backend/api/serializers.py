@@ -2,12 +2,15 @@ import datetime
 import re
 
 from django.contrib.auth.hashers import make_password
-from django.core.exceptions import ObjectDoesNotExist
+from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.core.validators import RegexValidator
 from django.db import transaction
 from django.http import Http404
 from django.shortcuts import get_object_or_404
 from django.urls import reverse
+from djoser import utils
+from djoser.conf import settings
+from djoser.serializers import PasswordRetypeSerializer
 from rest_framework import serializers, validators
 
 from organizations.models import (Appointment, District,
@@ -475,3 +478,50 @@ class SignUpSerializer(serializers.Serializer):
 class TokenSerializer(serializers.Serializer):
     email = serializers.EmailField(required=True)
     password = serializers.CharField(required=True)
+
+
+class UidAndTokenSerializer(serializers.Serializer):
+    """Сериализатор проверки текущего пользователя."""
+    uid = serializers.CharField(required=False)
+    token = serializers.CharField(required=False)
+
+    default_error_messages = {
+        "invalid_token": settings.CONSTANTS.messages.INVALID_TOKEN_ERROR,
+        "invalid_uid": settings.CONSTANTS.messages.INVALID_UID_ERROR,
+    }
+
+    def custom_validator(self):
+        request_object = self.context['request']
+        url = request_object._request.path
+        find_uid = re.search(
+            r'(?<=\/reset_password_confirm\/)([A-Za-z]{3})', url)
+        uid = find_uid.group()
+        find_token = re.search(
+            r'(?<=\/reset_password_confirm\/[A-Za-z]{3}\/)([\w-]+)', url)
+        token = find_token.group()
+        return {
+            "uid": uid,
+            "token": token
+        }
+
+    def validate(self, attrs):
+        self.custom_validator()
+        uid = self.custom_validator().get('uid')
+        try:
+            uid = utils.decode_uid(uid)
+            self.user = User.objects.get(pk=uid)
+        except (User.DoesNotExist, ValueError, TypeError, OverflowError):
+            key_error = "invalid_uid"
+            raise ValidationError(
+                {"uid": [self.error_messages[key_error]]}, code=key_error
+            )
+        return super().validate(attrs)
+
+
+class PasswordResetConfirmRetypeSerializer(
+        UidAndTokenSerializer,
+        PasswordRetypeSerializer):
+    """PasswordRetypeSerializer взят из джосера,
+    UidAndTokenSerializer переопределен.
+    """
+    pass
