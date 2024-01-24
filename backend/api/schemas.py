@@ -4,8 +4,7 @@ APPOINTMENT_TAG = 'Талоны'
 MAIN_TAG = 'Организации'
 SPEC_TAG = 'Специальности врачей'
 TOWN_TAG = 'Города'
-SIGNUP_TAG = 'Регистрация нового пользователя'
-LOGIN_TAG = 'Авторизация существуещего пользователя'
+MANAGMENT_ACCOUNT = "Управление учётной записью"
 
 RESPONSE_404 = openapi.Response('Страница не найдена.',
                                 examples={
@@ -39,7 +38,10 @@ RESPONSE_200_AUTHORIZATION = openapi.Response(
     'Авторизация успешна!',
     examples={
         "application/json": {
-            "detail": "Авторизация успешна!"}
+            "detail": "Авторизация успешна!",
+            "access": "access_token",
+            "refresh": "refresh_token"
+        }
     })
 
 RESPONSES_REGISTRATION = {
@@ -176,9 +178,10 @@ APPOINT_SCHEMAS = {
 SIGNUP_SCHEMAS = {
     "post":
         {
-            "tags": [SIGNUP_TAG],
+            "tags": [MANAGMENT_ACCOUNT],
             "summary": "Создание нового пользователя",
-            "description": "Страница доступна всем пользователям.",
+            "description": "Используется для регистрации."
+                           " Нужно ввести емейл и пароль.",
             "responses": RESPONSES_REGISTRATION
         }
 }
@@ -186,9 +189,10 @@ SIGNUP_SCHEMAS = {
 LOGIN_SCHEMAS = {
     "post":
         {
-            "tags": [LOGIN_TAG],
+            "tags": [MANAGMENT_ACCOUNT],
             "summary": "Авторизация существующего пользователя",
-            "description": "Страница доступна всем пользователям.",
+            "description": "Используется для авторизации по емейлу и паролю,"
+                           " чтобы далее использовать токен при запросах.",
             "responses": RESPONSES_AUTHORIZATION
         }
 }

@@ -33,7 +33,9 @@ def get_tokens_for_user(user):
         tags=SIGNUP_SCHEMAS["post"]["tags"],
         operation_summary=SIGNUP_SCHEMAS["post"]["summary"],
         operation_description=SIGNUP_SCHEMAS["post"]["description"],
-        responses=SIGNUP_SCHEMAS["post"]["responses"])
+        responses=SIGNUP_SCHEMAS["post"]["responses"],
+        security=[]
+    )
 )
 class SignUp(APIView):
     """Вью для регистрации нового пользователя"""
@@ -56,7 +58,9 @@ class SignUp(APIView):
         tags=LOGIN_SCHEMAS["post"]["tags"],
         operation_summary=LOGIN_SCHEMAS["post"]["summary"],
         operation_description=LOGIN_SCHEMAS["post"]["description"],
-        responses=LOGIN_SCHEMAS["post"]["responses"])
+        responses=LOGIN_SCHEMAS["post"]["responses"],
+        security=[]
+    )
 )
 class LoginView(APIView):
     """Вью для авторизации зарегистрированного пользователя"""
