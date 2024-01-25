@@ -34,7 +34,7 @@ from ..serializers import (TownRetrieveSerializer, TownListSerializer,
 class TownViewSet(NoPaginationMixin,
                   RetrieveListViewSet):
     """Вью-сет для города."""
-    lookup_value_regex = '\d+'
+    lookup_value_regex = r'\d+'
 
     def get_queryset(self):
         """Оптимизируем походы в базу данных."""
@@ -43,6 +43,7 @@ class TownViewSet(NoPaginationMixin,
             return Town.objects.prefetch_related('districts').all()
         if self.action == 'list':
             return Town.objects.only('id', 'name').all()
+        return Town.objects.all()
 
     def get_serializer_class(self):
         """Определяем какой сериализатор использовать в зависимости от
