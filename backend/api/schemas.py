@@ -74,6 +74,12 @@ PARAMS_FOR_DISTANCE_FILTER = [
                       default=36.26134),
 ]
 
+PARAMS_FOR_TOWN = [
+    openapi.Parameter('id', openapi.IN_PATH,
+                      description="ID города",
+                      type=openapi.TYPE_INTEGER)
+]
+
 ORGS_SCHEMAS = {
     "list":
         {
@@ -161,7 +167,18 @@ TOWN_SCHEMAS = {
             "tags": [TOWN_TAG],
             "summary": "Получение города",
             "description": "Страница доступна всем.",
-            "responses": RESPONSES_WITH_404
+            "responses": RESPONSES_WITH_404,
+            "params": PARAMS_FOR_TOWN
+
+        },
+    'get_specialties':
+        {
+            "tags": [TOWN_TAG],
+            "summary": "Получение списка специальностей врачей,"
+                       " имеющихся в городе",
+            "description": "Страница доступна всем.",
+            "responses": RESPONSE_404,
+            "params": PARAMS_FOR_TOWN
         }
 }
 
