@@ -18,7 +18,7 @@ class Specialty(models.Model):
     )
 
     class Meta:
-        ordering = ['code']
+        ordering = ['skill']
         verbose_name = 'Специальность'
         verbose_name_plural = 'Специальности'
 
