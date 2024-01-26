@@ -11,6 +11,7 @@ from organizations.models import Organization
 
 
 class ReviewViewSet(viewsets.ModelViewSet):
+    """Вьюсет для отзывов."""
     serializer_class = ReviewSerializer
 
     permission_classes = (
