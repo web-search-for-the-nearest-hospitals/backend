@@ -208,11 +208,16 @@ class OrganizationListSerializer(serializers.ModelSerializer):
     distance = serializers.SerializerMethodField(
         help_text='Форматированное расстояние до организации')
 
+    can_appoint = serializers.SerializerMethodField(
+        help_text='Можно ли записаться в организацию на прием к врачу'
+    )
+
     class Meta:
         model = Organization
         fields = ('relative_addr', 'short_name', 'factual_address',
                   'longitude', 'latitude', 'site', 'about', 'phone', 'town',
-                  'district', 'is_full_time', 'distance', 'business_hours',
+                  'district', 'is_full_time', 'distance', 'can_appoint',
+                  'business_hours',
                   )
         extra_kwargs = {
             'short_name': {'required': False},
@@ -227,6 +232,9 @@ class OrganizationListSerializer(serializers.ModelSerializer):
 
     def get_distance(self, obj) -> str:
         return dist_to_str(obj.distance)
+
+    def get_can_appoint(self, obj) -> bool:
+        return obj.specialties.exists()
 
 
 class OrganizationCreateUpdateSerializer(serializers.ModelSerializer):
