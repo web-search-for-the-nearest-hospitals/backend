@@ -525,9 +525,8 @@ class UidAndTokenSerializer(serializers.Serializer):
         return super().validate(attrs)
 
 
-class PasswordResetConfirmRetypeSerializer(
-    UidAndTokenSerializer,
-    PasswordRetypeSerializer):
+class PasswordResetConfirmRetypeSerializer(UidAndTokenSerializer,
+                                           PasswordRetypeSerializer):
     """PasswordRetypeSerializer взят из джосера,
     UidAndTokenSerializer переопределен.
     """
