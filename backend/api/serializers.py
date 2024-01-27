@@ -205,15 +205,8 @@ class OrganizationListSerializer(serializers.ModelSerializer):
         read_only=True,
         help_text='Рабочие часы организации')
 
-    """
-    distance = serializers.FloatField(
-        read_only=True,
-        help_text='Расстояние в км до организации')
-    """
-
     distance = serializers.SerializerMethodField(
-        help_text='Форматированное расстояние до организации'
-    )
+        help_text='Форматированное расстояние до организации')
 
     class Meta:
         model = Organization
