@@ -19,7 +19,7 @@ from organizations.models import (Appointment, District,
                                   Specialty, Town)
 from user.models import User
 from .fields import DistrictField, SlugRelatedFieldWith404
-from .utils import FIO_REGEX, PHONE_NUMBER_REGEX, haversine
+from .utils import FIO_REGEX, PHONE_NUMBER_REGEX, dist_to_str, haversine
 
 
 class SpecialtySerializer(serializers.ModelSerializer):
@@ -205,11 +205,15 @@ class OrganizationListSerializer(serializers.ModelSerializer):
         read_only=True,
         help_text='Рабочие часы организации')
 
+    distance = serializers.SerializerMethodField(
+        help_text='Форматированное расстояние до организации')
+
     class Meta:
         model = Organization
         fields = ('relative_addr', 'short_name', 'factual_address',
                   'longitude', 'latitude', 'site', 'about', 'phone', 'town',
-                  'district', 'is_full_time', 'business_hours')
+                  'district', 'is_full_time', 'distance', 'business_hours',
+                  )
         extra_kwargs = {
             'short_name': {'required': False},
             'factual_address': {'required': False},
@@ -217,9 +221,12 @@ class OrganizationListSerializer(serializers.ModelSerializer):
             'latitude': {'required': False},
         }
 
-    def get_relative_addr(self, obj):
+    def get_relative_addr(self, obj) -> str:
         return reverse('api:organizations-detail',
                        kwargs={'uuid': obj.uuid})
+
+    def get_distance(self, obj) -> str:
+        return dist_to_str(obj.distance)
 
 
 class OrganizationCreateUpdateSerializer(serializers.ModelSerializer):
@@ -518,9 +525,8 @@ class UidAndTokenSerializer(serializers.Serializer):
         return super().validate(attrs)
 
 
-class PasswordResetConfirmRetypeSerializer(
-        UidAndTokenSerializer,
-        PasswordRetypeSerializer):
+class PasswordResetConfirmRetypeSerializer(UidAndTokenSerializer,
+                                           PasswordRetypeSerializer):
     """PasswordRetypeSerializer взят из джосера,
     UidAndTokenSerializer переопределен.
     """
