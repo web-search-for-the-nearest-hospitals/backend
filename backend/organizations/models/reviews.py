@@ -11,6 +11,7 @@ class Review(models.Model):
         Organization,
         on_delete=models.CASCADE,
         verbose_name='Организация',
+        related_name='organization',
     )
 
     text = models.CharField(

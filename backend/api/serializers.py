@@ -529,7 +529,7 @@ class PasswordResetConfirmRetypeSerializer(
 
 class ReviewSerializer(serializers.ModelSerializer):
     author = serializers.SlugRelatedField(
-        slug_field='username',
+        slug_field='email',
         read_only=True,
     )
 
