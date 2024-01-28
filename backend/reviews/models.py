@@ -38,7 +38,6 @@ class Review(models.Model):
     class Meta:
         verbose_name = 'Отзыв'
         verbose_name_plural = 'Отзывы'
-        default_related_name = 'reviews'
         ordering = ['-pub_date']
 
     def __str__(self):
