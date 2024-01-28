@@ -171,11 +171,17 @@ class OrganizationRetrieveSerializer(serializers.ModelSerializer):
         read_only=True,
         help_text='Рабочие часы организации')
 
+    rating = serializers.FloatField(
+        min_value=0.0,
+        max_value=5.0,
+        help_text='Рейтинг организации (либо Float, либо null)',
+        required=False)
+
     class Meta:
         model = Organization
         lookup_field = 'uuid'
         fields = ('short_name', 'factual_address', 'site', 'about', 'phone',
-                  'is_full_time', 'business_hours', 'specialties')
+                  'is_full_time', 'rating', 'business_hours', 'specialties')
         extra_kwargs = {
             'short_name': {'required': False},
             'factual_address': {'required': False},
@@ -212,18 +218,24 @@ class OrganizationListSerializer(serializers.ModelSerializer):
         help_text='Можно ли записаться в организацию на прием к врачу'
     )
 
+    rating = serializers.FloatField(
+        min_value=0.0,
+        max_value=5.0,
+        help_text='Рейтинг организации (либо Float, либо null)',
+        required=False)
+
     class Meta:
         model = Organization
         fields = ('relative_addr', 'short_name', 'factual_address',
                   'longitude', 'latitude', 'site', 'about', 'phone', 'town',
                   'district', 'is_full_time', 'distance', 'can_appoint',
-                  'business_hours',
+                  'rating', 'business_hours',
                   )
         extra_kwargs = {
             'short_name': {'required': False},
             'factual_address': {'required': False},
             'longitude': {'required': False},
-            'latitude': {'required': False},
+            'latitude': {'required': False}
         }
 
     def get_relative_addr(self, obj) -> str:
