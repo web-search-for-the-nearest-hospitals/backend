@@ -14,7 +14,7 @@ class Review(models.Model):
         related_name='reviews',
     )
 
-    text = models.CharField(
+    text = models.TextField(
         'Текст отзыва',
         max_length=500
     )
@@ -38,6 +38,12 @@ class Review(models.Model):
     class Meta:
         verbose_name = 'Отзыв'
         verbose_name_plural = 'Отзывы'
+        constraints = [
+            models.UniqueConstraint(
+                fields=('organization', 'author',),
+                name='unique_review'
+            )
+        ]
         ordering = ['-pub_date']
 
     def __str__(self):
