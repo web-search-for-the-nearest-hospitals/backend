@@ -5,4 +5,3 @@ from .orghours import OrganizationBusinessHour
 from .orgspec import OrganizationSpecialty
 from .specialty import Specialty
 from .town import Town
-from .reviews import Review

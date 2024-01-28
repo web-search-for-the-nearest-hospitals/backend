@@ -1,12 +1,11 @@
-from rest_framework.response import Response
+from rest_framework import viewsets
 from rest_framework.generics import get_object_or_404
 from rest_framework.pagination import LimitOffsetPagination
-from rest_framework import viewsets
+from rest_framework.response import Response
 
-
-from ..permissions import IsAuthorOrIsAuthenticated
-from ..serializers import ReviewSerializer
+from api.permissions import IsAuthorOrIsAuthenticated
 from organizations.models import Organization
+from reviews.serializers import ReviewSerializer
 
 
 class ReviewViewSet(viewsets.ModelViewSet):

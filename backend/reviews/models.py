@@ -1,7 +1,7 @@
 from django.db import models
 
+from organizations.models import Organization
 from user.models import User
-from .organization import Organization
 
 
 class Review(models.Model):
@@ -11,7 +11,7 @@ class Review(models.Model):
         Organization,
         on_delete=models.CASCADE,
         verbose_name='Организация',
-        related_name='organization',
+        related_name='reviews',
     )
 
     text = models.CharField(

@@ -2,8 +2,9 @@ from django.urls import include, path
 from djoser.views import UserViewSet
 from rest_framework.routers import DefaultRouter
 
+from reviews.views import ReviewViewSet
 from .views import (AppointmentViewSet, OrganizationViewSet,
-                    SpecialtyViewSet, TownViewSet, ReviewViewSet)
+                    SpecialtyViewSet, TownViewSet)
 from .views import (SignUp, LoginView)
 
 
