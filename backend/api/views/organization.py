@@ -1,7 +1,7 @@
 import datetime
 import http
 
-from django.db.models import Prefetch
+from django.db.models import Prefetch, Avg
 from django.utils.decorators import method_decorator
 from django_filters.rest_framework import DjangoFilterBackend
 from drf_yasg.utils import swagger_auto_schema
@@ -70,6 +70,13 @@ class OrganizationViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         """Оптимизируем походы в базу данных."""
 
+        query = (
+            Organization
+            .objects
+            .prefetch_related('business_hours')
+            .annotate(rating=Avg('reviews__score'))
+        )
+
         if self.action in self.ACTIONS_WITH_ONE_INSTANCE:
             prefetch = Prefetch(
                 'specialties',
@@ -78,19 +85,16 @@ class OrganizationViewSet(viewsets.ModelViewSet):
                     .objects
                     .distinct('specialty')
                     .all()))
+
             return (
-                Organization
-                .objects
+                query
                 .prefetch_related(prefetch)
-                .prefetch_related('business_hours')
                 .only('short_name', 'factual_address', 'site',
                       'about', 'phone', 'is_full_time')
                 .all())
 
         return (
-            Organization
-            .objects
-            .prefetch_related('business_hours')
+            query
             .prefetch_related('specialties')
             .select_related('town', 'district')
             .all())
