@@ -34,13 +34,14 @@ INSTALLED_APPS = [
     'django.contrib.postgres',
     'rest_framework',
     'rest_framework_simplejwt',
+    'drf_yasg',
+    'djoser',
     'corsheaders',
     'django_filters',
     'organizations',
     'user',
     'api',
-    'drf_yasg',
-    'djoser',
+    'reviews',
 ]
 
 MIDDLEWARE = [
