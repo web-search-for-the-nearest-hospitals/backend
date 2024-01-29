@@ -15,7 +15,7 @@ CSRF_TRUSTED_ORIGINS = os.getenv('CSRF_TRUSTED_ORIGINS',
 CORS_ORIGIN_ALLOW_ALL = True
 CORS_URLS_REGEX = r'^/api/.*$'
 
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = os.getenv('BACKEND_HOSTS', '*').split()
 
@@ -38,10 +38,14 @@ INSTALLED_APPS = [
     'djoser',
     'corsheaders',
     'django_filters',
-    'organizations',
+    'geography',
+    'specialties',
     'user',
-    'api',
+    'appointments',
+    'organizations',
     'reviews',
+    'api',
+
 ]
 
 MIDDLEWARE = [

@@ -1,8 +1,7 @@
 from django.contrib import admin
 
-from .models import (Appointment, District, Organization,
-                     OrganizationSpecialty, OrganizationBusinessHour,
-                     Specialty, Town)
+from .models import (Organization,
+                     OrganizationSpecialty, OrganizationBusinessHour)
 
 
 class BusinessHourInline(admin.StackedInline):
@@ -21,13 +20,6 @@ class OrganizationAdminModel(admin.ModelAdmin):
     inlines = [BusinessHourInline, ]
 
 
-@admin.register(Specialty)
-class SpecialtyAdminModel(admin.ModelAdmin):
-    """Модель админки для специальностей врачей."""
-
-    list_display = ('code', 'name', 'skill')
-
-
 @admin.register(OrganizationSpecialty)
 class OrganizationSpecialtyAdminModel(admin.ModelAdmin):
     """Модель админки для расписания специальностей в больничке."""
@@ -36,26 +28,3 @@ class OrganizationSpecialtyAdminModel(admin.ModelAdmin):
                     'day_of_the_week', 'from_hour', 'to_hour')
     ordering = ['organization', 'day_of_the_week', 'from_hour']
     list_filter = ('day_of_the_week',)
-
-
-@admin.register(Town)
-class TownAdminModel(admin.ModelAdmin):
-    """Модель админки для города."""
-
-    list_display = ('name', 'longitude', 'latitude')
-
-
-@admin.register(District)
-class DistrictAdminModel(admin.ModelAdmin):
-    """Модель админки для района."""
-
-    list_display = ('name', 'town', 'longitude', 'latitude')
-
-
-@admin.register(Appointment)
-class AppointmentAdminModel(admin.ModelAdmin):
-    """Модель админки для записи к врачу."""
-
-    list_display = ('id', 'organization', 'specialty', 'client',
-                    'datetime_start',
-                    'status')

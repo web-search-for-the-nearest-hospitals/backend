@@ -2,11 +2,12 @@ from django.urls import include, path
 from djoser.views import UserViewSet
 from rest_framework.routers import DefaultRouter
 
+from appointments.views import AppointmentViewSet
+from geography.views import TownViewSet
+from organizations.views import OrganizationViewSet
 from reviews.views import ReviewViewSet
-from .views import (AppointmentViewSet, OrganizationViewSet,
-                    SpecialtyViewSet, TownViewSet)
-from .views import (SignUp, LoginView)
-
+from specialties.views import SpecialtyViewSet
+from user.views import SignUp, LoginView
 
 app_name = 'api'
 router = DefaultRouter()
