@@ -1,14 +1,39 @@
+from django.utils.decorators import method_decorator
+from drf_yasg.utils import swagger_auto_schema
 from rest_framework import viewsets
 from rest_framework.generics import get_object_or_404
-from rest_framework.pagination import LimitOffsetPagination
+from rest_framework.mixins import CreateModelMixin, ListModelMixin
+from rest_framework.pagination import PageNumberPagination
 from rest_framework.response import Response
 
 from organizations.models import Organization
 from .permissions import IsAuthorOrIsAuthenticated
+from .schemas import REVIEWS_SCHEMAS
 from .serializers import ReviewSerializer
 
 
-class ReviewViewSet(viewsets.ModelViewSet):
+@method_decorator(
+    name="list",
+    decorator=swagger_auto_schema(
+        tags=REVIEWS_SCHEMAS["list"]["tags"],
+        operation_summary=REVIEWS_SCHEMAS["list"]["summary"],
+        operation_description=REVIEWS_SCHEMAS["list"]["description"],
+        responses=REVIEWS_SCHEMAS["list"]["responses"],
+        security=[]
+    ),
+)
+@method_decorator(
+    name="create",
+    decorator=swagger_auto_schema(
+        tags=REVIEWS_SCHEMAS["create"]["tags"],
+        operation_summary=REVIEWS_SCHEMAS["create"]["summary"],
+        operation_description=REVIEWS_SCHEMAS["create"]["description"],
+        responses=REVIEWS_SCHEMAS["create"]["responses"],
+    ),
+)
+class ReviewViewSet(CreateModelMixin,
+                    ListModelMixin,
+                    viewsets.GenericViewSet):
     """Вьюсет для отзывов."""
     serializer_class = ReviewSerializer
 
@@ -16,7 +41,7 @@ class ReviewViewSet(viewsets.ModelViewSet):
         IsAuthorOrIsAuthenticated,
     )
 
-    pagination_class = LimitOffsetPagination
+    pagination_class = PageNumberPagination
 
     def get_organization(self):
         return get_object_or_404(
