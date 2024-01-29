@@ -3,8 +3,7 @@ import uuid
 from django.db import models
 from django.conf import settings
 
-from .district import District
-from .town import Town
+from geography.models import District, Town
 
 
 class Organization(models.Model):
