@@ -63,9 +63,3 @@ class AppointmentCreateSerializer(serializers.Serializer):
         required=True,
         validators=[RegexValidator(regex=PHONE_NUMBER_REGEX)],
         help_text='Номер телефона пациента')
-
-    email = serializers.EmailField(
-        min_length=4,
-        max_length=254,
-        required=True,
-        help_text='Электронная почта пациента')
