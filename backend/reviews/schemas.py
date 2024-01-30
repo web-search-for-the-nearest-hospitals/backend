@@ -2,6 +2,15 @@ from drf_yasg import openapi
 
 REVIEW_TAG = 'Отзывы'
 
+PARAMS_FOR_UUID = [
+    openapi.Parameter("uuid",
+                      openapi.IN_QUERY,
+                      type=openapi.FORMAT_UUID,
+                      description="Уникальный идентификатор организации",
+                      ),
+
+]
+
 RESPONSE_401 = openapi.Response(
     'Отзыв могут оставлять только авторизованные пользователи',
     examples={
@@ -35,7 +44,8 @@ REVIEWS_SCHEMAS = {
             "tags": [REVIEW_TAG],
             "summary": "Отзывы",
             "description": "Получение всех отзывов",
-            "responses": []
+            "responses": [],
+            "params": PARAMS_FOR_UUID
         },
     "create":
         {

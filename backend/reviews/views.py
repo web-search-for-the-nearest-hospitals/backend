@@ -3,13 +3,12 @@ from drf_yasg.utils import swagger_auto_schema
 from rest_framework import viewsets
 from rest_framework.generics import get_object_or_404
 from rest_framework.mixins import CreateModelMixin, ListModelMixin
-from rest_framework.pagination import PageNumberPagination
-from rest_framework.response import Response
 
 from organizations.models import Organization
+from organizations.paginators import CustomNumberPagination
 from .permissions import IsAuthorOrIsAuthenticated
 from .schemas import REVIEWS_SCHEMAS
-from .serializers import ReviewSerializer
+from .serializers import ReviewSerializer, ReviewListSerializer
 
 
 @method_decorator(
@@ -19,7 +18,8 @@ from .serializers import ReviewSerializer
         operation_summary=REVIEWS_SCHEMAS["list"]["summary"],
         operation_description=REVIEWS_SCHEMAS["list"]["description"],
         responses=REVIEWS_SCHEMAS["list"]["responses"],
-        security=[]
+        security=[],
+        manual_parameters=REVIEWS_SCHEMAS['list']['params'],
     ),
 )
 @method_decorator(
@@ -41,7 +41,7 @@ class ReviewViewSet(CreateModelMixin,
         IsAuthorOrIsAuthenticated,
     )
 
-    pagination_class = PageNumberPagination
+    pagination_class = CustomNumberPagination
 
     def get_organization(self):
         return get_object_or_404(
@@ -57,11 +57,7 @@ class ReviewViewSet(CreateModelMixin,
             author=self.request.user, organization=self.get_organization()
         )
 
-    def update(self, request, *args, **kwargs):
-        partial = kwargs.pop('partial', False)
-        instance = self.get_object()
-        serializer = self.get_serializer(
-            instance, data=request.data, partial=partial)
-        serializer.is_valid(raise_exception=True)
-        self.perform_update(serializer)
-        return Response(serializer.data)
+    def get_serializer_class(self):
+        if self.action == 'list':
+            return ReviewListSerializer
+        return ReviewSerializer
