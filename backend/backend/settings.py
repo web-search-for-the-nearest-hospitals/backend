@@ -18,7 +18,7 @@ CELERY_TIMEZONE = 'Europe/Moscow'
 CORS_ORIGIN_ALLOW_ALL = True
 CORS_URLS_REGEX = r'^/api/.*$'
 
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = os.getenv('BACKEND_HOSTS', '*').split()
 
@@ -120,17 +120,18 @@ STATIC_ROOT = BASE_DIR / STATIC_URL
 MEDIA_URL = 'media/'
 MEDIA_ROOT = BASE_DIR / MEDIA_URL
 
+"""
 EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'
 EMAIL_FILE_PATH = os.path.join(BASE_DIR, 'sent_emails')
-
 """
+
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL')
 EMAIL_HOST = os.getenv('EMAIL_HOST')
 EMAIL_PORT = os.getenv('EMAIL_PORT')
 EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
-EMAIL_USE_SSL=os.getenv('EMAIL_USE_SSL')
-"""
+EMAIL_USE_SSL = os.getenv('EMAIL_USE_SSL')
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 

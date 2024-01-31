@@ -12,10 +12,17 @@ def send_email(user_id, appointment_id):
     user = get_object_or_404(User, pk=user_id)
     appointment = get_object_or_404(Appointment, pk=appointment_id)
 
+    fio = 'Пользователь'
+    if user.first_name:
+        fio = user.first_name
+    if user.last_name:
+        fio += f' {user.last_name[0]}.'
+
     org = appointment.organization
     context = {
-        'user_fio': user.first_name,
+        'user_fio': fio,
         'appoint_date_time': appointment.datetime_start,
+        'appoint_skill': appointment.specialty.skill,
         'org_address': org.factual_address,
         'org_name': org.short_name,
         'org_phone': org.phone
@@ -27,7 +34,7 @@ def send_email(user_id, appointment_id):
     send_mail(
         subject="Поисклиник: уведомление о записи на прием",
         message=txt,
-        from_email='vgolosyandriya@yandex.ru',
+        from_email=None,
         recipient_list=[user.email],
         html_message=html
     )
