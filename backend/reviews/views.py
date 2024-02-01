@@ -29,6 +29,7 @@ from .serializers import ReviewSerializer, ReviewListSerializer
         operation_summary=REVIEWS_SCHEMAS["create"]["summary"],
         operation_description=REVIEWS_SCHEMAS["create"]["description"],
         responses=REVIEWS_SCHEMAS["create"]["responses"],
+        manual_parameters=REVIEWS_SCHEMAS['create']['params']
     ),
 )
 class ReviewViewSet(CreateModelMixin,

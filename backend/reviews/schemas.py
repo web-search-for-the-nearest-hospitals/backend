@@ -4,7 +4,7 @@ REVIEW_TAG = 'Отзывы'
 
 PARAMS_FOR_UUID = [
     openapi.Parameter("uuid",
-                      openapi.IN_QUERY,
+                      openapi.IN_PATH,
                       type=openapi.FORMAT_UUID,
                       description="Уникальный идентификатор организации",
                       ),
@@ -51,6 +51,7 @@ REVIEWS_SCHEMAS = {
             "summary": "Добавление отзыва",
             "description": "Отзыв может оставить "
                            "только зарегистрированный пользователь",
-            "responses": RESPONSES_REVIEWS
+            "responses": RESPONSES_REVIEWS,
+            "params": PARAMS_FOR_UUID
         },
 }
