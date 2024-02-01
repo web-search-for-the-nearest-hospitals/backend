@@ -35,7 +35,6 @@ class ReviewViewSet(CreateModelMixin,
                     ListModelMixin,
                     viewsets.GenericViewSet):
     """Вьюсет для отзывов."""
-    serializer_class = ReviewSerializer
 
     permission_classes = (
         IsAuthorOrIsAuthenticated,

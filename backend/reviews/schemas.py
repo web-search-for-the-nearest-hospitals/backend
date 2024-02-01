@@ -19,14 +19,12 @@ RESPONSE_401 = openapi.Response(
                       "только авторизованные пользователи"}
     }
 )
-RESPONSE_200 = openapi.Response(
+RESPONSE_201 = openapi.Response(
     'Все отзывы',
     examples={
         "application/json": {
-            "detail": "Успешный запрос!",
-            "id": 0,
             "text": "string",
-            "author": "string",
+            "first_name": "string",
             "score": 1,
             "pub_date": "2019-08-24T14:15:22Z"
         }
@@ -34,7 +32,7 @@ RESPONSE_200 = openapi.Response(
 )
 
 RESPONSES_REVIEWS = {
-    '200': RESPONSE_200,
+    '201': RESPONSE_201,
     '401': RESPONSE_401
 }
 
