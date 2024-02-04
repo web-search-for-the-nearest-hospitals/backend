@@ -200,9 +200,9 @@ DJOSER = {
     'ACTIVATION_URL': '#/activate/{uid}/{token}',
     'SEND_ACTIVATION_EMAIL': True,
     'SERIALIZERS': {
-        'password_reset_confirm_retype': 'api.serializers.PasswordResetConfirmRetypeSerializer',
+        'password_reset_confirm_retype': 'user.serializers.PasswordResetConfirmRetypeSerializer',
     },
     'EMAIL': {
-        'password_reset': 'api.views.auth.PasswordResetEmail'
+        'password_reset': 'user.views.PasswordResetEmail'
     },
 }

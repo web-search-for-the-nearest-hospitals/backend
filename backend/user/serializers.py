@@ -55,11 +55,11 @@ class UidAndTokenSerializer(serializers.Serializer):
         request_object = self.context['request']
         url = request_object._request.path
         find_uid = re.search(
-            r'(?<=\/reset_password_confirm\/)([A-Za-z]{3})', url)
+            r'(?<=/reset_password_confirm/)([A-Za-z]+)', url)
         uid = find_uid.group()
         find_token = re.search(
-            r'(?<=\/reset_password_confirm\/[A-Za-z]{3}\/)([\w-]+)', url)
-        token = find_token.group()
+            r'/reset_password_confirm/[A-Za-z]+/([\w-]+)', url)
+        token = find_token.group(1)
         return {
             "uid": uid,
             "token": token
