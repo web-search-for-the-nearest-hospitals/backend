@@ -12,6 +12,9 @@ SECRET_KEY = os.getenv('SECRET_KEY')
 CSRF_TRUSTED_ORIGINS = os.getenv('CSRF_TRUSTED_ORIGINS',
                                  'http://localhost').split()
 
+CELERY_BROKER_URL = os.getenv('CELERY_BROKER_URL', 'pyamqp://localhost')
+CELERY_TIMEZONE = 'Europe/Moscow'
+
 CORS_ORIGIN_ALLOW_ALL = True
 CORS_URLS_REGEX = r'^/api/.*$'
 
@@ -117,11 +120,18 @@ STATIC_ROOT = BASE_DIR / STATIC_URL
 MEDIA_URL = 'media/'
 MEDIA_ROOT = BASE_DIR / MEDIA_URL
 
-# Эти настройки используются для отладки, пока нет настройки сервера отправки писем
-# Пользователь дёргает ручку /auth/users/reset_password/ ->>
-# в папку sent_email отправляется письмо, где содержится ссылка для сброса пароля
+"""
 EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'
 EMAIL_FILE_PATH = os.path.join(BASE_DIR, 'sent_emails')
+"""
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL')
+EMAIL_HOST = os.getenv('EMAIL_HOST')
+EMAIL_PORT = os.getenv('EMAIL_PORT')
+EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
+EMAIL_USE_SSL = os.getenv('EMAIL_USE_SSL')
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
@@ -190,9 +200,9 @@ DJOSER = {
     'ACTIVATION_URL': '#/activate/{uid}/{token}',
     'SEND_ACTIVATION_EMAIL': True,
     'SERIALIZERS': {
-        'password_reset_confirm_retype': 'api.serializers.PasswordResetConfirmRetypeSerializer',
+        'password_reset_confirm_retype': 'user.serializers.PasswordResetConfirmRetypeSerializer',
     },
     'EMAIL': {
-        'password_reset': 'api.views.auth.PasswordResetEmail'
+        'password_reset': 'user.views.PasswordResetEmail'
     },
 }

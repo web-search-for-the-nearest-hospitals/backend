@@ -11,6 +11,7 @@ from .mixins import NoPaginationMixin, UpdateViewSet
 from .models import Appointment
 from .schemas import APPOINT_SCHEMAS
 from .serializers import AppointmentCreateSerializer
+from .tasks import send_email
 
 
 @method_decorator(
@@ -68,5 +69,6 @@ class AppointmentViewSet(NoPaginationMixin,
 
             instance.client, instance.status = user, Appointment.PLANNED
             instance.save(update_fields=['client', 'status'])
+            send_email.delay(user_id=user.pk, appointment_id=instance.pk)
 
         return response.Response(status=http.HTTPStatus.NO_CONTENT)
