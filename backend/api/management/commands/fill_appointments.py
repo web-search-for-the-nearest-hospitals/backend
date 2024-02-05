@@ -65,12 +65,13 @@ class Command(BaseCommand):
             for x_date in x_dates:
                 num_day = x_date.weekday() + 1
 
-                if (Appointment.objects.filter(
+                if (Appointment
+                        .objects
+                        .filter(
                         organization_id=schedule.organization,
                         specialty_id=schedule.specialty,
                         datetime_start__date=x_date)
-                        .exists()
-                ):
+                        .exists()):
                     continue
                 if num_day == schedule.day_of_the_week:
                     from_hour = schedule.from_hour
