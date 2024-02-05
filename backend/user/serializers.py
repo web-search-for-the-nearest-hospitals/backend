@@ -9,11 +9,13 @@ from rest_framework import serializers
 
 from .models import User
 
+regex_for_password = re.compile(r'^[a-zA-Z0-9!#$%&()*+,-./:;<=>?@[\]^_`{|}]{'
+                                r'8,16}$')
+
 
 class SignUpSerializer(serializers.Serializer):
     """Сериализатор регистрации нового пользователя."""
 
-    regex_for_password = r'[a-zA-Z0-9]{8,}'
     email = serializers.EmailField(
         max_length=254,
         required=True,
