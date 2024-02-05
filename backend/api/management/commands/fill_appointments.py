@@ -18,8 +18,8 @@ class Command(BaseCommand):
     def add_arguments(self, parser):
         parser.add_argument('-n', '--num-days',
                             type=int,
-                            choices=range(1, 9),
-                            metavar="[1-8]",
+                            choices=range(1, 15),
+                            metavar="[1-15]",
                             default=8,
                             dest='N',
                             help=('Количество дней вперед от текущей даты,'
@@ -65,6 +65,14 @@ class Command(BaseCommand):
             for x_date in x_dates:
                 num_day = x_date.weekday() + 1
 
+                if (Appointment
+                        .objects
+                        .filter(
+                        organization_id=schedule.organization,
+                        specialty_id=schedule.specialty,
+                        datetime_start__date=x_date)
+                        .exists()):
+                    continue
                 if num_day == schedule.day_of_the_week:
                     from_hour = schedule.from_hour
 
