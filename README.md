@@ -1,16 +1,41 @@
 # ПоисКлиник
 
-[ПоисКлиник](http://poisklinik.acceleratorpracticum.ru/api/) - это 
-приложение для поиска ближайших медицинских учреждений.  
+![web_search_for_the_nearest_hospitals Workflow](https://github.com/web-search-for-the-nearest-hospitals/backend/actions/workflows/main.yml/badge.svg)
+
+### [ПоисКлиник](https://poisklinik.acceleratorpracticum.ru) - это веб-приложение для поиска ближайших медицинских учреждений.
+
+
 В этом репозитории живет backend этого приложения.
-Backend реализован с помощью DRF, СУБД - PostgreSQL.
 
-Документация API расположена [тут](http://poisklinik.acceleratorpracticum.ru/api/).
+---
+# Технологии
 
-### 1 релиз
+![Python](https://img.shields.io/badge/python-3670A0?style=for-the-badge&logo=python&logoColor=ffdd54)
+![Django](https://img.shields.io/badge/django-%23092E20.svg?style=for-the-badge&logo=django&logoColor=white)
+![DjangoREST](https://img.shields.io/badge/DJANGO-REST-ff1709?style=for-the-badge&logo=django&logoColor=white&color=ff1709&labelColor=gray)
+![Postgres](https://img.shields.io/badge/postgres-%23316192.svg?style=for-the-badge&logo=postgresql&logoColor=white)
+![GitHub Actions](https://img.shields.io/badge/github%20actions-%232671E5.svg?style=for-the-badge&logo=githubactions&logoColor=white)
+![Docker](https://img.shields.io/badge/docker-%230db7ed.svg?style=for-the-badge&logo=docker&logoColor=white)
+![Redis](https://img.shields.io/badge/redis-%23DD0031.svg?style=for-the-badge&logo=redis&logoColor=white)
+![Celery](https://img.shields.io/badge/celery-%23a9cc54.svg?style=for-the-badge&logo=celery&logoColor=ddf4a4)
+---
+
+# [Документация API](https://poisklinik.acceleratorpracticum.ru/redoc/)
+
+---
+
+# Детали
 
 <details>
- <summary>Бизнес-логика приложения</summary>
+ <summary>Возможности API</summary>
+
+### Регистрация и авторизация пользователя
+- регистрация пользователя
+- авторизация пользователя
+- авторизованный пользователь может создавать, изменять и удалять организации
+- авторизованный пользователь может записываться на прием к врачу
+- авторизованный пользователь может оставлять отзывы
+- сброс и задание нового пароля пользователя
 
 ### Обработка сведений о медицинских учреждениях
 - отдача списка медицинских учреждений
@@ -21,8 +46,13 @@ Backend реализован с помощью DRF, СУБД - PostgreSQL.
   работающих в организации; город и район расположения организации; является 
   ли организация государственной или коммерческой; является ли организация 
   круглосуточной или нет
+- отдача специальностей врачей конкретной организации
+- отдача расписания работы учреждения
 - поиск учреждения по его наименованию
 - пагинация списка учреждений
+- создание организации
+- изменение свойств организации
+- удаление организации
 
 ### Обработка сведений о специальностях врачей
 - отдача списка специальностей врачей в соответствии с Приказом Министерства 
@@ -32,10 +62,16 @@ Backend реализован с помощью DRF, СУБД - PostgreSQL.
 - отдача списка городов РФ, медицинские учреждения которых используется в 
   сервисе
 - отдача конкретного города с имеющимся списком административных районов в нем
+- отдача списка специальностей, имеющихся в конкретном городе
 
 ### Реализация записи к специальности врача в учреждение
 - получение списка талонов для записи
 - организация записи пользователя к специальности врача
+
+### Отзывы к организациям
+- получение списка отзывов
+- создание нового отзыва
+
 </details>
 
 <details>
@@ -46,10 +82,9 @@ Backend реализован с помощью DRF, СУБД - PostgreSQL.
 2. Скорость - самая главная характеристика сервиса - каждый SQL-запрос 
    профилирован.
 3. Создана и настроена админка для гибкого управления сущностями сервиса.
-4. Созданы и настроены (но пока скрыты до 2 релиза) методы создания, 
-   редактирования и удаления главной сущностью сервиса - организации.
-5. Реализован гибкий процесс по осуществлению записи к врачу в организацию. 
-   Сервис в фоновом режиме управляет талонами на заданный период времени. 
+4. Реализован гибкий процесс по осуществлению записи к врачу в организацию. 
+   Сервис в фоновом режиме (Cron/Celery) управляет талонами на заданный период 
+   времени. 
    Для записи к врачу достаточно получить список свободных талонов на 
    интересующие пользователя дату приема и специальность врача и записаться.
 6. Заранее предугадана и решена проблема **race condition** при записи к 
@@ -61,10 +96,24 @@ Backend реализован с помощью DRF, СУБД - PostgreSQL.
 <details>
 <summary>Установка</summary>
 
-Для локального развертывания используется команда из директории `infra` от root
+Для локального развертывания необходимо создать файл с переменными 
+окружения `env`. Пример такого файла находится в репозитории под названием .
+env.example.  
+
+Для запуска сервиса используются последовательно команды из директории 
+`infra` от пользователя с правами root
 ```shell
 docker-compose -f docker-compose-local.yml up --build -d
+docker exec infra-backend-1 python3 manage.py migrate
+docker exec infra-backend-1 python3 manage.py collectstatic
 ```
-Не забыть про миграции и статику.  
+ 
 Сервис будет доступен на http://localhost:28962.
 </details>
+
+---
+
+# Команда
+[Вяхирев Александр](https://github.com/ewnevil)  
+[Павлов Максим](https://github.com/PavlovMaximYurevich)  
+[Прудывус Павел](https://github.com/PrudyvusP) - техлид

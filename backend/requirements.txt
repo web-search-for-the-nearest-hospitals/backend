@@ -1,10 +1,12 @@
 asgiref==3.7.2
 backports.zoneinfo==0.2.1;python_version<"3.9"
+celery[redis]==5.3.6
 Django==4.2.7
 django-cors-headers==4.3.1
 django-filter==23.4
 djangorestframework==3.14.0
 djangorestframework-simplejwt==5.3.1
+djoser==2.2.2
 drf-yasg==1.21.7
 exceptiongroup==1.2.0
 gunicorn==21.2.0

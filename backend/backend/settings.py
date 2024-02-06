@@ -12,6 +12,9 @@ SECRET_KEY = os.getenv('SECRET_KEY')
 CSRF_TRUSTED_ORIGINS = os.getenv('CSRF_TRUSTED_ORIGINS',
                                  'http://localhost').split()
 
+CELERY_BROKER_URL = os.getenv('CELERY_BROKER_URL', 'pyamqp://localhost')
+CELERY_TIMEZONE = 'Europe/Moscow'
+
 CORS_ORIGIN_ALLOW_ALL = True
 CORS_URLS_REGEX = r'^/api/.*$'
 
@@ -34,12 +37,18 @@ INSTALLED_APPS = [
     'django.contrib.postgres',
     'rest_framework',
     'rest_framework_simplejwt',
+    'drf_yasg',
+    'djoser',
     'corsheaders',
     'django_filters',
-    'organizations',
+    'geography',
+    'specialties',
     'user',
+    'appointments',
+    'organizations',
+    'reviews',
     'api',
-    'drf_yasg'
+
 ]
 
 MIDDLEWARE = [
@@ -55,10 +64,11 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'backend.urls'
 
+TEMPLATES_DIR = os.path.join(BASE_DIR, 'templates')
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [TEMPLATES_DIR],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -110,6 +120,19 @@ STATIC_ROOT = BASE_DIR / STATIC_URL
 MEDIA_URL = 'media/'
 MEDIA_ROOT = BASE_DIR / MEDIA_URL
 
+"""
+EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'
+EMAIL_FILE_PATH = os.path.join(BASE_DIR, 'sent_emails')
+"""
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL')
+EMAIL_HOST = os.getenv('EMAIL_HOST')
+EMAIL_PORT = os.getenv('EMAIL_PORT')
+EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
+EMAIL_USE_SSL = os.getenv('EMAIL_USE_SSL')
+
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 SIMPLE_JWT = {
@@ -137,6 +160,17 @@ REST_FRAMEWORK = {
     'PAGE_SIZE': 10
 }
 
+SWAGGER_SETTINGS = {
+    'USE_SESSION_AUTH': False,
+    'SECURITY_DEFINITIONS': {
+        'Bearer': {
+            'type': 'apiKey',
+            'name': 'Authorization',
+            'in': 'header'
+        }
+    },
+}
+
 LOGGING = {
     'version': 1,
     'filters': {
@@ -157,4 +191,18 @@ LOGGING = {
             'handlers': ['console'],
         }
     }
+}
+
+DJOSER = {
+    'PASSWORD_RESET_CONFIRM_URL': 'api/auth/users/reset_password_confirm/{uid}/{token}/',
+    'PASSWORD_RESET_CONFIRM_RETYPE': True,
+    'USERNAME_RESET_CONFIRM_URL': '#/username/reset/confirm/{uid}/{token}',
+    'ACTIVATION_URL': '#/activate/{uid}/{token}',
+    'SEND_ACTIVATION_EMAIL': True,
+    'SERIALIZERS': {
+        'password_reset_confirm_retype': 'user.serializers.PasswordResetConfirmRetypeSerializer',
+    },
+    'EMAIL': {
+        'password_reset': 'user.views.PasswordResetEmail'
+    },
 }

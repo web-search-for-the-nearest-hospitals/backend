@@ -52,7 +52,7 @@ jobs:
           with:
             context: backend/
             push: true
-            tags: hospitals/backend:latest
+            tags: ${{ secrets.DOCKER_USERNAME }}/backend:latest
   deploy:
       if: github.event.pull_request.merged == true
       runs-on: ubuntu-latest
@@ -66,6 +66,7 @@ jobs:
           password: ${{ secrets.PASSWORD }}
           script: |
             cd ..
+            sudo docker image prune -f
             sudo docker pull ${{ secrets.DOCKER_USERNAME }}/backend
             sudo docker compose -p infra stop
             sudo docker compose -p infra rm backend
@@ -84,6 +85,13 @@ jobs:
             echo VITE_NODE_ENV=${{ secrets.VITE_NODE_ENV }} >> .env
             echo VITE_YAMAP_API_KEY=${{ secrets.VITE_YAMAP_API_KEY }} >> .env
             echo VITE_BACK_URL=${{ secrets.VITE_BACK_URL }} >> .env
+            echo DEFAULT_FROM_EMAIL=${{ secrets.DEFAULT_FROM_EMAIL }} >> .env
+            echo EMAIL_HOST=${{ secrets.EMAIL_HOST }} >> .env
+            echo EMAIL_PORT=${{ secrets.EMAIL_PORT }} >> .env
+            echo EMAIL_HOST_USER=${{ secrets.EMAIL_HOST_USER }} >> .env
+            echo EMAIL_HOST_PASSWORD=${{ secrets.EMAIL_HOST_PASSWORD }} >> .env
+            echo EMAIL_USE_SSL=${{ secrets.EMAIL_USE_SSL }} >> .env
+            echo CELERY_BROKER_URL=${{ secrets.CELERY_BROKER_URL }} >> .env
             sudo docker compose -p infra up -d --build
             sudo docker compose -p infra exec backend python manage.py migrate
 

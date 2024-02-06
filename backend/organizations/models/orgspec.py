@@ -1,7 +1,7 @@
 from django.db import models
 
+from specialties.models import Specialty
 from .organization import Organization
-from .specialty import Specialty
 
 
 class MyModelManager(models.Manager):
