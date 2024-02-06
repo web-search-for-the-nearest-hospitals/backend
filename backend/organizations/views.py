@@ -122,6 +122,7 @@ class OrganizationViewSet(viewsets.ModelViewSet):
     pagination_class = CustomNumberPagination
     http_method_names = ['get', 'post', 'head', 'delete', 'patch']
     lookup_field = 'uuid'
+    lookup_value_regex = r'[0-9a-f-]{36}'
     permission_classes = (IsOwnerOrAdminOrReadOnly,)
 
     @swagger_auto_schema(
@@ -142,7 +143,6 @@ class OrganizationViewSet(viewsets.ModelViewSet):
     def get_free_tickets(self, request, uuid):
         """Формирует свободные диапазоны времени для
         переданных даты и специальности врача."""
-
         serializer = AppointmentParamSerializer(data=request.query_params)
         serializer.is_valid(raise_exception=True)
 
