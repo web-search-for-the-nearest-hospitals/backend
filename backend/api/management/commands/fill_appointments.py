@@ -19,8 +19,8 @@ class Command(BaseCommand):
         parser.add_argument('-n', '--num-days',
                             type=int,
                             choices=range(1, 15),
-                            metavar="[1-15]",
-                            default=8,
+                            metavar="[1-14]",
+                            default=14,
                             dest='N',
                             help=('Количество дней вперед от текущей даты,'
                                   'на которые нужно сформировать талоны.'
