@@ -34,9 +34,25 @@ RESPONSE_200_AUTHORIZATION = openapi.Response(
     'Авторизация успешна!',
     examples={
         "application/json": {
-            "detail": "Авторизация успешна!",
-            "access": "access_token",
-            "refresh": "refresh_token"
+            "Success": "Аутентификация пройдена",
+            "access_token_info": {
+                "token_type": "access",
+                "exp": 1708939213,
+                "iat": 1708507213,
+                "jti": "6e3a74be900645c49a0c8f14aecd866c",
+                "user_id": 7
+            },
+            "refresh_token_info": {
+                "token_type": "refresh",
+                "exp": 1713691213,
+                "iat": 1708507213,
+                "jti": "04dbd90f45494088bd6d165a7afb0cfc",
+                "user_id": 7
+            },
+            "data": {
+                "refresh": "refresh_token",
+                "access": "access_token"
+            }
         }
     })
 
@@ -75,8 +91,11 @@ LOGIN_SCHEMAS = {
         {
             "tags": [MANAGMENT_ACCOUNT],
             "summary": "Авторизация существующего пользователя",
-            "description": "Используется для авторизации по емейлу и паролю,"
-                           " чтобы далее использовать токен при запросах.",
+            "description":
+                "Используется для авторизации по емейлу и паролю,"
+                " чтобы далее использовать токен при запросах."
+                "IAT - время создания токена(в сек. с 0 года н.э.),"
+                "EXP  -время окончания токена(в сек. с 0 года н.э.)",
             "responses": RESPONSES_AUTHORIZATION
         }
 }

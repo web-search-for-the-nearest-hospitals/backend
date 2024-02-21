@@ -1,3 +1,4 @@
+import jwt
 from django.conf import settings
 from django.contrib.auth import authenticate
 from django.contrib.auth.tokens import default_token_generator
@@ -77,13 +78,35 @@ class LoginView(APIView):
             response.set_cookie(
                 key=settings.SIMPLE_JWT['AUTH_COOKIE'],
                 value=data["refresh"],
+                expires=settings.SIMPLE_JWT['REFRESH_TOKEN_LIFETIME'],
+                secure=settings.SIMPLE_JWT['AUTH_COOKIE_SECURE'],
+                httponly=settings.SIMPLE_JWT['AUTH_COOKIE_HTTP_ONLY'],
+                samesite=settings.SIMPLE_JWT['AUTH_COOKIE_SAMESITE'],
+            )
+            response.set_cookie(
+                key='access',
+                value=data["access"],
                 expires=settings.SIMPLE_JWT['ACCESS_TOKEN_LIFETIME'],
                 secure=settings.SIMPLE_JWT['AUTH_COOKIE_SECURE'],
                 httponly=settings.SIMPLE_JWT['AUTH_COOKIE_HTTP_ONLY'],
                 samesite=settings.SIMPLE_JWT['AUTH_COOKIE_SAMESITE'],
             )
+            payload_refresh = jwt.decode(jwt=data["refresh"],
+                                         key=settings.SECRET_KEY,
+                                         algorithms=['HS256'])
+            response.set_cookie(key='refresh_token_info',
+                                value=payload_refresh)
+
+            payload_access = jwt.decode(jwt=data["access"],
+                                        key=settings.SECRET_KEY,
+                                        algorithms=['HS256'])
+            response.set_cookie(key='access_token_info',
+                                value=payload_access)
+
             csrf.get_token(request)
             response.data = {"Success": "Аутентификация пройдена",
+                             "access_token_info": payload_access,
+                             "refresh_token_info": payload_refresh,
                              "data": data}
             return response
         return Response({
